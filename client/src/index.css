@@ -1,0 +1,47 @@
+@import "tailwindcss";
+@theme {
+  --color-velvet-orchid: #742092;
+  --color-mauve: #e3c2ff;
+
+  --color-velvet-orchid-50: #f6eafa;
+  --color-velvet-orchid-100: #edd5f6;
+  --color-velvet-orchid-200: #dbabed;
+  --color-velvet-orchid-300: #c982e3;
+  --color-velvet-orchid-400: #b758da;
+  --color-velvet-orchid-500: #a62ed1;
+  --color-velvet-orchid-600: #8425a7;
+  --color-velvet-orchid-700: #631c7d;
+  --color-velvet-orchid-800: #421254;
+  --color-velvet-orchid-900: #21092a;
+  --color-velvet-orchid-950: #17061d;
+
+  --color-mauve-50: #f3e5ff;
+  --color-mauve-100: #e7ccff;
+  --color-mauve-200: #cf99ff;
+  --color-mauve-300: #b866ff;
+  --color-mauve-400: #a033ff;
+  --color-mauve-500: #8800ff;
+  --color-mauve-600: #6d00cc;
+  --color-mauve-700: #520099;
+  --color-mauve-800: #360066;
+  --color-mauve-900: #1b0033;
+  --color-mauve-950: #130024;
+
+  --font-luckiest-guy: {
+    font-family: "Luckiest Guy", cursive;
+    font-weight: 400;
+    font-style: normal;
+  };
+}
+
+.luckiest-guy {
+  font-family: "Luckiest Guy", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+* {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
