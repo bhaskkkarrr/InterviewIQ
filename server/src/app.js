@@ -7,9 +7,10 @@ import cors from "cors";
 import config from "./config/config.js";
 const app = express();
 connectDB();
+const allowedOrigins = [config.CLIENT_URL, config.CLIENT_LIVE_URL];
 app.use(
   cors({
-    origin: config.CLIENT_URL,
+    origin: allowedOrigins,
     credentials: true,
   }),
 );
