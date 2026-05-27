@@ -7,13 +7,16 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
-const Auth = () => {
+const AuthModal = ({ isOpen, onClose }) => {
+  if (!isOpen) return null;
+
   const { login } = useAuth();
   const navigate = useNavigate();
   const handleGoogleAuth = async () => {
     const res = await login();
     if (res.success) {
       toast.success(res.message);
+      onClose();
       navigate("/");
     } else {
       console.log("RESPONSE", res);
@@ -21,12 +24,16 @@ const Auth = () => {
     }
   };
   return (
-    <div className="w-full h-screen flex justify-center items-center">
+    <div
+      className="fixed inset-0 w-full flex z-999 justify-center items-center min-h-screen bg-velvet-orchid/25 backdrop-blur"
+      onClick={onClose}
+    >
       <motion.div
         initial={{ opacity: 0, y: -40 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1.1 }}
-        className="w-lg bg-linear-60 from-velvet-orchid-700 to-mauve-700 rounded-2xl text-mauve-50 shadow-2xl px-7 py-5 flex flex-col justify-center items-center space-y-4 mx-5"
+        transition={{ duration: 0.4 }}
+        className=" bg-linear-60 from-velvet-orchid-700 to-mauve-700 rounded-2xl text-mauve-50 shadow-2xl shadow-blac px-7 py-5 flex flex-col justify-center items-center space-y-4 mx-5"
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="flex  justify-center text-3xl font-bold luckiest-guy uppercase md:text-4xl lg:text-5xl xl:text-6xl">
           Interview IQ
@@ -54,4 +61,4 @@ const Auth = () => {
   );
 };
 
-export default Auth;
+export default AuthModal;

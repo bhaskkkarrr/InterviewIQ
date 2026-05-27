@@ -61,7 +61,7 @@ const FeaturesCards = () => {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: i * 0.1 }}
-            whileHover={{ scale: 1.02, transition: { duration: 0.1 } }}
+            whileHover={{ scale: 1.02, transition: { duration: 0.5 } }}
             className="flex bg-mauve-800/70 p-8 rounded-2xl shadow-lg shadow-velvet-orchid-700 gap-4 max-w-lg items-end"
             key={i}
           >
