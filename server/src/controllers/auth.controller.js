@@ -44,7 +44,7 @@ export async function getUser(req, res) {
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     secure: true,
-    sameSite: "strict",
+    sameSite: "none",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
@@ -120,7 +120,7 @@ export async function getAccessToken(req, res) {
   res.cookie("refreshToken", newRefreshToken, {
     secure: true,
     httpOnly: true,
-    sameSite: "strict",
+    sameSite: "none",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
   res.status(200).json({
