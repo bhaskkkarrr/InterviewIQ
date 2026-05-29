@@ -137,13 +137,15 @@ export async function getAccessToken(req, res) {
 
 export async function logout(req, res) {
   const refreshToken = req.cookies.refreshToken;
+  console.log("Cookies:", req.cookies);
+  console.log("Refresh Token:", req.cookies.refreshToken);
   if (!refreshToken) {
     return res.status(400).json({
       success: false,
       message: "Token not found",
     });
   }
-  
+
   const refreshTokenHash = crypto
     .createHash("sha256")
     .update(refreshToken)
