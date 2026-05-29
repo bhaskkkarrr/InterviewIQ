@@ -27,9 +27,12 @@ export const AuthProvider = ({ children }) => {
       console.log("API Result: ", result);
       setToken(result.data.token);
       setUser(result.data.user);
-      toast.success("Logged in successfully")
+      toast.success("Logged in successfully");
+      return { success: true };
     } catch (error) {
-      toast.error(error.message)
+      console.log("error", error);
+      toast.error(error.message);
+      return { success: false };
     } finally {
       setIsLoading(false);
     }

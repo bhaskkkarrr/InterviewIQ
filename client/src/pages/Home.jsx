@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import AuthModal from "../components/AuthModal";
 import ProfileModal from "../components/ProfileModal";
+import LoaderCircle from "../components/LoaderCircle";
 
 const Home = () => {
   const [showModal, setShowModal] = useState(false);

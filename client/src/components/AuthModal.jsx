@@ -6,21 +6,18 @@ import axiosInstance from "../utils/axiosInstance";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import LoaderCircle from "./LoaderCircle";
 
 const AuthModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
-  const { login } = useAuth();
+  const { login, isLoading } = useAuth();
   const navigate = useNavigate();
   const handleGoogleAuth = async () => {
     const res = await login();
     if (res.success) {
-      toast.success(res.message);
-      // onClose();
+      onClose();
       navigate("/");
-    } else {
-      console.log("RESPONSE", res);
-      toast.error(res.message);
     }
   };
   return (
@@ -50,11 +47,20 @@ const AuthModal = ({ isOpen, onClose }) => {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
           transition={{ duration: 0.2 }}
-          className="flex gap-3 items-center justify-center bg-mauve px-3 py-1 rounded-full w-full text-velvet-orchid-900 sm:w-fit shadow shadow-mauve font-semibold text-sm sm:text-lg"
+          className="flex gap-3 items-center justify-center bg-mauve px-3 py-1 rounded-full w-full text-velvet-orchid-900  shadow shadow-mauve font-semibold text-sm sm:text-lg"
+          disabled={isLoading}
           onClick={handleGoogleAuth}
         >
-          <FcGoogle />
-          Continue with Google
+          {isLoading ? (
+            <div className="">
+              <LoaderCircle />
+            </div>
+          ) : (
+            <div className="flex gap-3 items-center justify-center text-velvet-orchid-900">
+              <FcGoogle />
+              Continue with Google
+            </div>
+          )}
         </motion.button>
       </motion.div>
     </div>

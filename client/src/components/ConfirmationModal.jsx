@@ -12,6 +12,7 @@ const ConfirmationModal = ({ isOpen, onClose, message, action }) => {
         <div className="flex items-center justify-between">
           <div className="text-3xl font-bold">Sure?</div>
           <motion.button
+            onClick={onClose}
             whileHover={{ rotate: 180 }}
             transition={{ duration: 0.2 }}
             className=""
