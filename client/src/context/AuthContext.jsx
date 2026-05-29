@@ -67,6 +67,7 @@ export const AuthProvider = ({ children }) => {
   const logOut = async () => {
     try {
       const res = await axiosInstance.post("/api/auth/logout");
+      console.log("RES", res);
       if (res.data.success) {
         setToken(null);
         setUser(null);
@@ -74,6 +75,7 @@ export const AuthProvider = ({ children }) => {
         toast.success("Logged out");
       }
     } catch (error) {
+      console.log("error", error);
       toast.error(error.message);
     }
   };

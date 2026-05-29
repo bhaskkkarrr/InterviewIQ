@@ -140,9 +140,10 @@ export async function logout(req, res) {
   if (!refreshToken) {
     return res.status(400).json({
       success: false,
-      message: "Access not granted, token not found",
+      message: "Token not found",
     });
   }
+  
   const refreshTokenHash = crypto
     .createHash("sha256")
     .update(refreshToken)
