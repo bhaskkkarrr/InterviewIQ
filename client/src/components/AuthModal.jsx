@@ -16,7 +16,7 @@ const AuthModal = ({ isOpen, onClose }) => {
     const res = await login();
     if (res.success) {
       toast.success(res.message);
-      onClose();
+      // onClose();
       navigate("/");
     } else {
       console.log("RESPONSE", res);

@@ -24,16 +24,17 @@ export const AuthProvider = ({ children }) => {
         name,
         email,
       });
+      console.log("API Result: ", result);
       setToken(result.data.token);
       setUser(result.data.user);
-      return { success: true, message: "Logged in successfully" };
+      toast.success("Logged in successfully")
     } catch (error) {
-      return { success: false, message: error.message };
+      toast.error(error.message)
     } finally {
       setIsLoading(false);
     }
   };
-  
+
   console.log("Token:", token, "User:", user);
 
   const getUser = async () => {
