@@ -6,10 +6,11 @@ import sessionModel from "../models/session.model.js";
 export async function isVerified(req, res, next) {
   let token;
   let authHeader = req.headers.authorization || req.headers.Authorization;
+
   if (authHeader && authHeader.startsWith("Bearer")) {
     token = authHeader.split(" ")[1];
   } else {
-    return res.status(401).json({ success: false, message: "Access denied" });
+    return res.status(401).json({ success: false, message: "Invalid token" });
   }
   if (!token) {
     return res
@@ -21,10 +22,9 @@ export async function isVerified(req, res, next) {
     if (!decoded) {
       return res.status(401).json({ success: false, message: "Invalid token" });
     }
-    console.log("Decoded", decoded);
     const session = await sessionModel.findOne({
       _id: decoded.sessionId,
-      invoked: false,
+      revoked: false,
     });
     if (!session) {
       return res
@@ -32,7 +32,6 @@ export async function isVerified(req, res, next) {
         .json({ success: false, message: "Session expired" });
     }
     const User = await userModel.findById(decoded.id);
-    console.log("User", User);
     if (!User) {
       return res
         .status(401)

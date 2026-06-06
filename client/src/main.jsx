@@ -4,12 +4,15 @@ import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import { Toaster } from "react-hot-toast";
+import { InterviewProvider } from "./context/InterviewContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
     <AuthProvider>
-      <Toaster />
-      <App />
+      <InterviewProvider>
+        <Toaster />
+        <App />
+      </InterviewProvider>
     </AuthProvider>
   </BrowserRouter>,
 );

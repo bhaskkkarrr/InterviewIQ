@@ -63,7 +63,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     getUser();
   }, []);
-
+  
   const logOut = async () => {
     try {
       const res = await axiosInstance.post("/api/auth/logout");

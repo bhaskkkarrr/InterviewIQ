@@ -16,12 +16,18 @@ if (!process.env.CLIENT_URL) {
 if (!process.env.CLIENT_LIVE_URL) {
   throw new Error("CLIENT_LIVE_URL is not available in environment variables");
 }
+if (!process.env.OPEN_ROUTER_API_KEY) {
+  throw new Error(
+    "OPEN_ROUTER_API_KEY is not available in environment variables",
+  );
+}
 const config = {
   PORT: process.env.PORT,
   MONGO_URI: process.env.MONGO_URI,
   JWT_SECRET: process.env.JWT_SECRET,
   CLIENT_URL: process.env.CLIENT_URL,
   CLIENT_LIVE_URL: process.env.CLIENT_LIVE_URL,
+  OPEN_ROUTER_API_KEY: process.env.OPEN_ROUTER_API_KEY,
 };
 
 export default config;
