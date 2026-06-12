@@ -8,6 +8,8 @@ export const InterviewProvider = ({ children }) => {
   const { token } = useAuth();
   const [isResumeLoading, setIsResumeLoading] = useState(false);
   const [resumeData, setResumeData] = useState(null);
+  const [resumeText, setResumeText] = useState(null);
+  const [resumeAnalysed, setResumeAnalysed] = useState(false);
   const handleAnalyzeResume = async (data) => {
     try {
       setIsResumeLoading(true);
@@ -18,6 +20,8 @@ export const InterviewProvider = ({ children }) => {
       });
       toast.success("Resume analysed successfully");
       setResumeData(res.data);
+      setResumeAnalysed(true);
+      setResumeText(res.data.user.resumeText);
     } catch (error) {
       console.log(error);
       toast.error(
@@ -29,6 +33,19 @@ export const InterviewProvider = ({ children }) => {
       setIsResumeLoading(false);
     }
   };
+
+  const handleInterviewSubmit = async (data) => {
+    console.log("Data", data);
+    const res = await axiosInstance.post(
+      "/api/interview/interview",
+      { data: { resumeText, data } },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+  };
   return (
     <InterviewContext.Provider
       value={{
@@ -37,6 +54,9 @@ export const InterviewProvider = ({ children }) => {
         setIsResumeLoading,
         resumeData,
         setResumeData,
+        handleInterviewSubmit,
+        resumeAnalysed,
+        setResumeAnalysed,
       }}
     >
       {children}

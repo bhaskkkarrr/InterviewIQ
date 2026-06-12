@@ -19,7 +19,7 @@ const ProfileModal = ({ isOpen, onClose }) => {
           <span className="font-bold text-[13px] uppercase">{user?.name}</span>
         </div>
 
-        <span className="text-xs">{user?.email}</span>
+        <span className="text-xs truncate">{user?.email}</span>
         <div className="uppercase text-xs hover:underline cursor-pointer text-mauve-800/60">
           View History
         </div>

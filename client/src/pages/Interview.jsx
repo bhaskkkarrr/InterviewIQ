@@ -1,19 +1,23 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { useForm } from "react-hook-form";
+import { motion } from "motion/react";
+
+// Components Import
+import { useInterview } from "../context/InterviewContext";
+import { VariableLoader } from "../components/Loaders";
+import InterviewSelector from "../components/InterviewSelector";
+
+// Icons
 import { GiModernCity } from "react-icons/gi";
 import { FaVideo } from "react-icons/fa";
 import { IoAnalyticsSharp } from "react-icons/io5";
 import { MdUploadFile } from "react-icons/md";
-import InterviewSelector from "../components/InterviewSelector";
-import { useForm } from "react-hook-form";
-import { useInterview } from "../context/InterviewContext";
-import { Document, Page, pdfjs } from "react-pdf";
 import { FaFilePdf } from "react-icons/fa";
-import toast from "react-hot-toast";
 import { AiOutlineCloudUpload } from "react-icons/ai";
 import { RxCross2 } from "react-icons/rx";
-import { motion } from "motion/react";
-import { VariableLoader } from "../components/Loaders";
 import { BiLoaderAlt } from "react-icons/bi";
+
 const Interview = () => {
   const {
     handleAnalyzeResume,
@@ -21,11 +25,21 @@ const Interview = () => {
     setIsResumeLoading,
     resumeData,
     setResumeData,
+    handleInterviewSubmit,
+    resumeAnalysed,
+    setResumeAnalysed,
   } = useInterview();
 
-  const { register, handleSubmit } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const [error, setError] = useState({ resumeAnalyzed: null });
   const [preview, setPreview] = useState(null);
   const [resume, setResume] = useState(null);
+  
   const handleFilePreview = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -39,31 +53,71 @@ const Interview = () => {
   };
 
   const handleFileSubmit = async (e) => {
-    console.log("Called");
     if (!resume) return;
     let formdata = new FormData();
     formdata.append("resume", resume);
     const response = await handleAnalyzeResume(formdata);
   };
+
+  const handleInterview = async (data) => {
+    if (resumeAnalysed) {
+      setError({ resumeAnalyzed: null });
+      await handleInterviewSubmit(data);
+    } else {
+      setError({ resumeAnalyzed: "Analyze resume first" });
+    }
+    console.log("Interview Data", data);
+  };
+
   const noOfSkills = resumeData?.user?.skills?.length;
-  console.log(noOfSkills);
   return (
     <div className="w-full min-h-screen bg-velvet-orchid-100 ">
       <div className="flex flex-col max-w-4xl mx-auto">
-        <h1 className="mx-auto text-5xl my-10 font-semibold text-velvet-orchid-800">
+        <h1 className="mx-auto text-5xl my-6 font-semibold text-velvet-orchid-800">
           Start AI Mock Interview
         </h1>
-        <div className="w-full bg-mauve-200 shadow-2xl shadow-velvet-orchid-800/50 rounded-xl p-8 text-velvet-orchid-800">
-          <form method="POST" className="space-y-4">
+        <div className="w-full bg-velvet-orchid-200 shadow-2xl shadow-velvet-orchid-800/50 rounded-xl p-8 text-velvet-orchid-800">
+          <form onSubmit={handleSubmit(handleInterview)} className="space-y-4">
+
+            {/* Mode */}
             <label className="flex flex-col items-start justify-center text-xl text-velvet-orchid-800 font-semibold ym-4 ">
               Pick Interview Mode:
               <select
                 className="w-full bg-mauve-50 text-velvet-orchid-800 px-3 py-2 focus:outline-0 rounded-xl text-lg font-normal"
-                {...register("interview-mode", { required: true })}
+                {...register("mode", {
+                  required: "Mode is required",
+                })}
               >
                 <option value="technical">Technical</option>
                 <option value="hr">HR</option>
               </select>
+              {errors.mode && (
+                <div className="text-red-800 text-sm">
+                  {errors.mode.message}
+                </div>
+              )}
+            </label>
+
+            {/* Experience */}
+            <label className="flex flex-col items-start justify-center text-xl text-velvet-orchid-800 font-semibold ym-4 ">
+              <div className="flex items-center justify-center gap-2">
+                Enter Experience:
+                <span className="flex text-velvet-orchid-400 text-sm">
+                  (eg. 2 years)
+                </span>
+              </div>
+              <input
+                type="text"
+                className="w-full bg-mauve-50 text-velvet-orchid-800 px-3 py-2 focus:outline-0 rounded-xl text-lg font-normal"
+                {...register("experience", {
+                  required: "Experience is required",
+                })}
+              />
+              {errors.experience && (
+                <div className="text-red-800 text-sm">
+                  {errors.experience.message}
+                </div>
+              )}
             </label>
 
             {/* UPLOAD FILE */}
@@ -75,22 +129,33 @@ const Interview = () => {
                     <span className="text-mauve-50 text-2xl font-semibold">
                       {resumeData?.user?.role}
                     </span>
-                    <h3 className="text-mauve-50 text-lg font-bold ">
-                      Key Projects:
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {resumeData?.user?.projects?.map((project) => (
-                        <span class="inline-flex items-center flex-row gap-x-1.5 py-1.5 px-3 rounded-lg text-xs font-medium bg-velvet-orchid-50 text-velvet-orchid-800 dark:bg-primary-500/20 dark:text-primary-400">
-                          {project}
-                        </span>
-                      ))}
-                    </div>
+                    {resumeData?.user?.projects.length > 0 && (
+                      <>
+                        <h3 className="text-mauve-50  text-lg font-bold ">
+                          Key Projects:
+                        </h3>
+                        <div className="flex flex-wrap gap-2">
+                          {resumeData?.user?.projects?.map((project, i) => (
+                            <span
+                              key={i}
+                              className="inline-flex items-center flex-row gap-x-1.5 py-1.5 px-3 rounded-lg text-xs font-medium bg-velvet-orchid-50 text-velvet-orchid-800 dark:bg-primary-500/20 dark:text-primary-400"
+                            >
+                              {project}
+                            </span>
+                          ))}
+                        </div>
+                      </>
+                    )}
+
                     <h3 className="text-mauve-50 text-lg font-semibold ">
                       Skills:
                     </h3>
                     <div className="flex flex-wrap gap-2 items-end">
-                      {resumeData?.user?.skills.slice(0, 6).map((skill) => (
-                        <span class="inline-flex items-center flex-row gap-x-1.5 py-1.5 px-3 rounded-lg text-xs font-medium bg-velvet-orchid-50 text-velvet-orchid-800">
+                      {resumeData?.user?.skills.slice(0, 6).map((skill, i) => (
+                        <span
+                          key={i}
+                          className="inline-flex items-center flex-row gap-x-1.5 py-1.5 px-3 rounded-lg text-xs font-medium bg-velvet-orchid-50 text-velvet-orchid-800"
+                        >
                           {skill}
                         </span>
                       ))}
@@ -100,7 +165,6 @@ const Interview = () => {
                         </div>
                       )}
                     </div>
-                    {console.log(resumeData)}
                   </div>
                 ) : preview ? (
                   <label className="flex flex-col items-center justify-center w-full h-64 bg-velvet-orchid/60 border-dashed border-mauve-100 rounded-2xl border-4 rounded-base cursor-pointer text-velvet-orchid-800">
@@ -111,7 +175,7 @@ const Interview = () => {
                       >
                         <FaFilePdf size={50} className="text-red-500" />
                         <motion.div
-                          whileHover={{ rotate: 180 }}
+                          whileHover={{ rotate: 90 }}
                           onClick={(e) => {
                             setPreview(null);
                             e.stopPropagation();
@@ -153,17 +217,30 @@ const Interview = () => {
                       id="fileInput"
                       type="file"
                       className="hidden"
-                      accept=".pdf,.docx"
+                      accept=".pdf"
                       disabled={preview}
-                      {...register("resume", { required: true })}
+                      {...register("resume", {
+                        required: "Resume is required",
+                      })}
                       onChange={(e) => {
                         handleFilePreview(e);
                       }}
                     />
+                    {errors.resume && (
+                      <div className="text-red-800 font-bold text-sm">
+                        {errors.resume.message}
+                      </div>
+                    )}
                   </label>
                 )}
               </div>
+              {error.resumeAnalyzed && (
+                <div className="text-sm font-bold text-red-700">
+                  {error.resumeAnalyzed}
+                </div>
+              )}
             </div>
+
             <div className="flex justify-end items-center">
               <motion.button
                 whileTap={{ scale: 0.95 }}
@@ -173,6 +250,7 @@ const Interview = () => {
                 Start Interview
               </motion.button>
             </div>
+
           </form>
         </div>
       </div>
@@ -181,3 +259,9 @@ const Interview = () => {
 };
 
 export default Interview;
+
+
+
+
+
+

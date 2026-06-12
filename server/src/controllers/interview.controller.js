@@ -50,9 +50,7 @@ export const analyseResume = async (req, res) => {
       },
     ];
     const AiResponse = await askAi(messages);
-    console.log("responseAI: ", AiResponse);
     const parsed = JSON.parse(AiResponse);
-    console.log("responsePar: ", parsed);
     return res.status(200).json({
       success: true,
       user: {
@@ -60,6 +58,7 @@ export const analyseResume = async (req, res) => {
         experience: parsed.experience,
         projects: parsed.projects,
         skills: parsed.skills,
+        resumeText,
       },
     });
   } catch (error) {
@@ -69,4 +68,8 @@ export const analyseResume = async (req, res) => {
       error: error.name,
     });
   }
+};
+
+export const interview = async (req, res) => {
+  console.log(req.body);
 };
