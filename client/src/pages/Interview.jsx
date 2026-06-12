@@ -245,7 +245,7 @@ const Interview = () => {
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 type="submit"
-                className="py-3 px-4 shadow-lg shadow-mauve-800/50 bg-velvet-orchid-700 text-mauve-50 rounded-xl hover:bg-velvet-orchid-600 cursor-pointer"
+                className="py-3 px-4 shadow-lg shadow-mauve-800/50 bg-velvet-orchid-600 text-mauve-50 rounded-xl hover:bg-velvet-orchid-700 cursor-pointer"
               >
                 Start Interview
               </motion.button>
