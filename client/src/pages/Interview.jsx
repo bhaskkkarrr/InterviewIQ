@@ -25,6 +25,7 @@ const Interview = () => {
     setIsResumeLoading,
     resumeData,
     setResumeData,
+    resumeText,
     handleInterviewSubmit,
     resumeAnalysed,
     setResumeAnalysed,
@@ -39,7 +40,7 @@ const Interview = () => {
   const [error, setError] = useState({ resumeAnalyzed: null });
   const [preview, setPreview] = useState(null);
   const [resume, setResume] = useState(null);
-  
+
   const handleFilePreview = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -60,9 +61,22 @@ const Interview = () => {
   };
 
   const handleInterview = async (data) => {
+    console.log("Form Data:", data);
+    console.log("Resume State:", resume);
+    console.log("Errors:", errors);
     if (resumeAnalysed) {
       setError({ resumeAnalyzed: null });
-      await handleInterviewSubmit(data);
+
+      const formdata = new FormData();
+
+      formdata.append("resumeText", resumeText);
+      formdata.append("mode", data.mode);
+      formdata.append("experience", data.experience);
+      formdata.append("resume", resume);
+
+      console.log([...formdata.entries()]);
+
+      await handleInterviewSubmit(formdata);
     } else {
       setError({ resumeAnalyzed: "Analyze resume first" });
     }
@@ -70,15 +84,15 @@ const Interview = () => {
   };
 
   const noOfSkills = resumeData?.user?.skills?.length;
+
   return (
-    <div className="w-full min-h-screen bg-velvet-orchid-100 ">
+    <div className="w-full min-h-screen bg-velvet-orchid-100 " id="con">
       <div className="flex flex-col max-w-4xl mx-auto">
         <h1 className="mx-auto text-5xl my-6 font-semibold text-velvet-orchid-800">
           Start AI Mock Interview
         </h1>
         <div className="w-full bg-velvet-orchid-200 shadow-2xl shadow-velvet-orchid-800/50 rounded-xl p-8 text-velvet-orchid-800">
           <form onSubmit={handleSubmit(handleInterview)} className="space-y-4">
-
             {/* Mode */}
             <label className="flex flex-col items-start justify-center text-xl text-velvet-orchid-800 font-semibold ym-4 ">
               Pick Interview Mode:
@@ -244,13 +258,13 @@ const Interview = () => {
             <div className="flex justify-end items-center">
               <motion.button
                 whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.1 }}
                 type="submit"
                 className="py-3 px-4 shadow-lg shadow-mauve-800/50 bg-velvet-orchid-600 text-mauve-50 rounded-xl hover:bg-velvet-orchid-700 cursor-pointer"
               >
                 Start Interview
               </motion.button>
             </div>
-
           </form>
         </div>
       </div>
@@ -259,9 +273,3 @@ const Interview = () => {
 };
 
 export default Interview;
-
-
-
-
-
-

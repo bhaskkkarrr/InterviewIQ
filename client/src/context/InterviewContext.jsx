@@ -36,15 +36,12 @@ export const InterviewProvider = ({ children }) => {
 
   const handleInterviewSubmit = async (data) => {
     console.log("Data", data);
-    const res = await axiosInstance.post(
-      "/api/interview/interview",
-      { data: { resumeText, data } },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+
+    const res = await axiosInstance.post("/api/interview/", data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
-    );
+    });
   };
   return (
     <InterviewContext.Provider
@@ -54,6 +51,7 @@ export const InterviewProvider = ({ children }) => {
         setIsResumeLoading,
         resumeData,
         setResumeData,
+        resumeText,
         handleInterviewSubmit,
         resumeAnalysed,
         setResumeAnalysed,

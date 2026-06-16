@@ -2,6 +2,7 @@ import fs from "fs";
 import * as pdfjsdist from "pdfjs-dist/legacy/build/pdf.mjs";
 import { askAi } from "../services/openRouter.service.js";
 import { parse } from "path";
+import { error } from "console";
 export const analyseResume = async (req, res) => {
   console.log("User: ", req.user);
   if (!req.file) {
@@ -71,5 +72,10 @@ export const analyseResume = async (req, res) => {
 };
 
 export const interview = async (req, res) => {
-  console.log(req.body);
+  try {
+    console.log(req.body);
+    console.log(req.file);
+  } catch (error) {
+    console.log(error);
+  }
 };

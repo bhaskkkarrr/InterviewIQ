@@ -61,7 +61,6 @@ const Home = () => {
       {showModal && (
         <AuthModal isOpen={showModal} onClose={() => setShowModal(false)} />
       )}
-      {user && <ProfileModal />}
     </div>
   );
 };

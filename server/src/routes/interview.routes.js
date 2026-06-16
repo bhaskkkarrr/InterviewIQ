@@ -10,5 +10,10 @@ interviewRouter.post(
   upload,
   interviewController.analyseResume,
 );
-interviewRouter.post("/interview", isVerified, interviewController.interview);
+interviewRouter.post(
+  "/",
+  isVerified,
+  upload,
+  interviewController.interview,
+);
 export default interviewRouter;
