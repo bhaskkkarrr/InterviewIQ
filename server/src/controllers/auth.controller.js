@@ -100,7 +100,7 @@ export async function getAccessToken(req, res) {
       sessionId: decoded.sessionId,
     },
     config.JWT_SECRET,
-    { expiresIn: "10m" },
+    { expiresIn: "100m" },
   );
 
   const newRefreshToken = jwt.sign(

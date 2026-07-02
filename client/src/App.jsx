@@ -3,6 +3,7 @@ import Home from "./pages/Home";
 import Interview from "./pages/Interview";
 import { useAuth } from "./context/AuthContext";
 import { GlobalLoader } from "./components/Loaders";
+import NotFound from "./pages/Page404";
 
 function App() {
   const { isLoading } = useAuth();
@@ -13,6 +14,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/interview" element={<Interview />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
     </>
