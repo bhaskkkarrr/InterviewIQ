@@ -10,8 +10,8 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(null);
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [authChecking, setAuthChecking] = useState(false);
   const login = async () => {
     try {
       setIsLoading(true);
@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }) => {
 
   const getUser = async () => {
     try {
-      setIsLoading(true);
+      setAuthChecking(true);
       const res = await axiosInstance.get("/api/auth/get-access-token");
       if (res.data.success) {
         setToken(res.data.token);
@@ -56,14 +56,14 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       return { success: false, message: error.message };
     } finally {
-      setIsLoading(false);
+      setAuthChecking(false);
     }
   };
 
   useEffect(() => {
     getUser();
   }, []);
-  
+
   const logOut = async () => {
     try {
       const res = await axiosInstance.post("/api/auth/logout");
@@ -90,6 +90,8 @@ export const AuthProvider = ({ children }) => {
         setIsLoading,
         login,
         logOut,
+        authChecking,
+        setAuthChecking,
       }}
     >
       {children}

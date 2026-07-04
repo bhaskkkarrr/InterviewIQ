@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 import logo from "/logo.png";
 import { useInterview } from "../../context/InterviewContext";
-import LoaderCircle from "../LoaderCircle";
 import { InterviewStartLoader } from "../Loaders";
 
 const demoData = {
@@ -201,9 +200,16 @@ function InterviewerSignal({ aiState }) {
 }
 
 export default function InterviewSessionPage() {
-  const interviewData = demoData.interviewSession;
-  // const [interviewData, setInterviewData] = useState(null);
-  const { preparingInterview, setPreparingInterview } = useInterview();
+  const {
+    preparingInterview,
+    setPreparingInterview,
+    interviewState,
+    currentQuestion,
+    interviewOn,
+    setInterviewOn,
+    handleEndInterview,
+  } = useInterview();
+  const interviewData = interviewState;
   const [elapsed, setElapsed] = useState(0);
   const [micOn, setMicOn] = useState(true);
   const [camOn, setCamOn] = useState(true);
@@ -213,9 +219,9 @@ export default function InterviewSessionPage() {
   const [confirmEnd, setConfirmEnd] = useState(false);
   const transcriptRef = useRef(null);
 
-  const currentQuestion =
-    interviewData.history[interviewData.history.length - 1];
-  const answeredCount = interviewData.history.filter((h) => h.answered).length;
+  const answeredCount = interviewData?.history?.filter(
+    (h) => h.answered,
+  ).length;
   // Timer
   useEffect(() => {
     const t = setInterval(() => setElapsed((e) => e + 1), 1000);
@@ -236,6 +242,7 @@ export default function InterviewSessionPage() {
 
   const handleEnd = useCallback(() => {
     setConfirmEnd(false);
+    handleEndInterview();
     // wire up: call end-interview endpoint, then route to report page
   }, []);
 
@@ -257,7 +264,7 @@ export default function InterviewSessionPage() {
                   className="object-contain shadow-xl shadow-black/20 h-8 w-8 rounded-md"
                 />
                 <div className="hidden sm:block">
-                  <p className="font-display text-sm font-semibold leading-none text-[#6a0002]">
+                  <p className="font-display text-sm font-semibold leading-none text-dark-garnet">
                     InterviewIQ
                   </p>
                   <p className="mt-0.5 text-xs text-[#3d4046]">
@@ -266,7 +273,7 @@ export default function InterviewSessionPage() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 rounded-full bg-[#6a0002] px-3 py-1.5 ring-1 ring-white/8">
+              <div className="flex items-center gap-2 rounded-full bg-dark-garnet px-3 py-1.5 ring-1 ring-white/8">
                 <span className="relative flex h-2 w-2">
                   <span
                     className="absolute inline-flex h-full w-full rounded-full bg-[#FF6B57]"
@@ -291,8 +298,8 @@ export default function InterviewSessionPage() {
             {/* Main area */}
             <main className="grid flex-1 grid-cols-1 gap-px bg-white/8 lg:grid-cols-[1fr_380px]">
               {/* Video / AI panel */}
-              <section className="flex flex-col ">
-                <div className="relative flex flex-1 rounded-2xl shadow-lg shadow-black/40 bg-[#14171F] mx-5 min-w-xs flex-col items-center justify-center gap-5 px-6 py-10">
+              <section className="flex flex-col">
+                <div className="relative flex flex-1 rounded-2xl shadow-lg shadow-black/40 bg-[#14171F] mx-5  min-w-xs flex-col items-center justify-center gap-5 px-6 py-10">
                   <InterviewerSignal aiState={aiState} />
                   <div className="text-center">
                     <p className="font-display text-base font-semibold text-white sm:text-lg">
@@ -360,11 +367,11 @@ export default function InterviewSessionPage() {
                 <div className="border-b border-white/8 px-5 py-5">
                   <div className="flex justify-between">
                     <div className="mb-3 flex items-center gap-2">
-                      <span className="rounded-full bg-[#6a0002]/12 px-2.5 py-1 text-[11px] font-medium text-[#6a0002] ring-1 ring-[#6a0002]/50">
+                      <span className="rounded-full bg-dark-garnet/12 px-2.5 py-1 text-[11px] font-medium text-dark-garnet capitalize ring-1 ring-dark-garnet/50">
                         {currentQuestion.topic}
                       </span>
                       <span
-                        className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${
+                        className={`rounded-full px-2.5 py-1 text-[11px] capitalize font-medium ${
                           DIFFICULTY_STYLES[currentQuestion.difficulty] ||
                           DIFFICULTY_STYLES.Easy
                         }`}
@@ -452,7 +459,7 @@ export default function InterviewSessionPage() {
                       className="flex-1 space-y-3 overflow-y-auto px-5 pb-5"
                       style={{ maxHeight: 220 }}
                     >
-                      {demoData.interviewSession.history.map((h, idx) => (
+                      {interviewData.history.map((h, idx) => (
                         <div className="text-black text-[11px]" key={idx}>
                           <div className="me-3 justify-start">
                             <b>Interviewer:</b> {h.question}

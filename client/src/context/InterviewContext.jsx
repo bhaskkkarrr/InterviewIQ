@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import axiosInstance from "../utils/axiosInstance";
 import { useAuth } from "./AuthContext";
@@ -56,25 +56,35 @@ const demoInterviewData = {
 export const InterviewContext = createContext();
 export const InterviewProvider = ({ children }) => {
   const { token } = useAuth();
-  const [isResumeLoading, setIsResumeLoading] = useState(false);
-  const [resumeData, setResumeData] = useState(null);
-  const [resumeText, setResumeText] = useState(null);
-  const [interviewData, setInterviewData] = useState(null);
+  const [isResumeAnalysing, setIsResumeAnalysing] = useState(false);
   const [preparingInterview, setPreparingInterview] = useState(false);
   const [resumeAnalysed, setResumeAnalysed] = useState(false);
-  const [interviewStartData, setInterviewStartData] = useState(null);
+  const [interviewOn, setInterviewOn] = useState(false);
+  const [resumeText, setResumeText] = useState(null);
+  const [interviewState, setInterviewState] = useState(null);
+  const [currentQuestion, setCurrentQuestion] = useState(null);
+  const [analysisResult, setAnalysisResult] = useState(null);
+
   const handleAnalyzeResume = async (data) => {
     try {
-      setIsResumeLoading(true);
+      setIsResumeAnalysing(true);
       const res = await axiosInstance.post("/api/interview/analyze", data, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      toast.success("Resume analysed successfully");
-      setResumeData(res.data);
-      setInterviewData(res.data.user);
+      if (!res.data.response.success) {
+        toast.error("Error occured while analysing resume");
+      }
+      toast.success("Resume Analysed successfully");
+      setAnalysisResult(res.data.response.data.analysis_result);
+      setResumeText(res.data.response.data.resume_text);
       setResumeAnalysed(true);
+      if (res.data.response.success) {
+        return { success: true };
+      } else {
+        return { success: false };
+      }
     } catch (error) {
       console.log(error);
       toast.error(
@@ -83,7 +93,7 @@ export const InterviewProvider = ({ children }) => {
           "Something went wrong",
       );
     } finally {
-      setIsResumeLoading(false);
+      setIsResumeAnalysing(false);
     }
   };
 
@@ -91,7 +101,7 @@ export const InterviewProvider = ({ children }) => {
     try {
       setPreparingInterview(true);
       const res = await axiosInstance.post(
-        "/api/interview/question",
+        "/api/interview/",
         {
           resume_text: demoInterviewData.resume_text,
         },
@@ -103,39 +113,65 @@ export const InterviewProvider = ({ children }) => {
       );
       if (res.data.success) {
         toast.success("Interview Started");
-        setInterviewStartData(res.data);
+        setInterviewOn(true);
+        setInterviewState(res.data.interviewSession);
+        setCurrentQuestion(res.data.question);
         localStorage.setItem(
-          "interviewSession",
+          "Interview State",
           JSON.stringify(res.data.interviewSession),
         );
         localStorage.setItem(
-          "currentQuestion",
+          "Current Question",
           JSON.stringify(res.data.question),
         );
       }
-      console.log("Response", res.data);
+      console.log("Response: \n", res.data);
     } catch (error) {
       toast.error(error.message);
     } finally {
       setPreparingInterview(false);
     }
   };
+
+  useEffect(() => {
+    if (
+      localStorage.getItem("Interview State") &&
+      localStorage.getItem("Current Question")
+    ) {
+      setInterviewState(JSON.parse(localStorage.getItem("Interview State")));
+      setCurrentQuestion(JSON.parse(localStorage.getItem("Current Question")));
+      setInterviewOn(true);
+    } else {
+      setInterviewOn(false);
+    }
+  }, []);
+
+  const handleEndInterview = async () => {
+    setInterviewOn(false);
+    localStorage.removeItem("Interview State");
+    localStorage.removeItem("Current Question");
+    setInterviewState(null);
+    setAnalysisResult(null);
+    setCurrentQuestion(null);
+    setResumeText(null);
+    toast.success("Interview Ended");
+  };
+
   return (
     <InterviewContext.Provider
       value={{
         handleAnalyzeResume,
-        isResumeLoading,
-        setIsResumeLoading,
+        handleEndInterview,
         preparingInterview,
-        setPreparingInterview,
-        resumeData,
-        setResumeData,
         resumeText,
         handleInterviewSubmit,
         resumeAnalysed,
-        setResumeAnalysed,
-        interviewData,
-        setInterviewData,
+        interviewState,
+        currentQuestion,
+        isResumeAnalysing,
+        analysisResult,
+        interviewOn,
+        setInterviewOn,
       }}
     >
       {children}

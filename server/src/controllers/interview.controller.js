@@ -3,8 +3,11 @@ import fs from "fs";
 import axios from "axios";
 import userModel from "../models/user.model.js";
 import InterviewSession from "../models/interview.model.js";
-import { evaluation, generation } from "../services/interview.service.js";
-import { error } from "console";
+import {
+  analyze,
+  evaluation,
+  generation,
+} from "../services/interview.service.js";
 import axiosInstance from "../utils/axiosInstance.js";
 
 export const analyseResume = async (req, res) => {
@@ -21,18 +24,17 @@ export const analyseResume = async (req, res) => {
       fs.createReadStream(req.file.path),
       req.file.originalname,
     );
-    const ai_response = await axiosInstance.post(
-      "/resume/analyze",
-      formData,
-      {
-        headers: formData.getHeaders(),
-      },
-    );
-
-    console.log("AI response: ", ai_response.data);
+    const response = await analyze(formData);
+    if (!response.success) {
+      return res.status(500).json({
+        success: false,
+        error: response.error,
+        message: "Error while analyzing resume",
+      });
+    }
+    console.log("AI response: ", response);
     return res.status(200).json({
-      success: true,
-      user: ai_response.data,
+      response,
     });
   } catch (error) {
     console.log("Error", error);
@@ -44,97 +46,119 @@ export const analyseResume = async (req, res) => {
   }
 };
 
-export const generateQuestion = async (req, res) => {
+export const interview = async (req, res) => {
   try {
-    const userId = req.user._id;
-    console.log("User", req.user);
-    if (!userId) {
+    const userId = req.user?._id;
+
+    const user = await userModel.findById(userId);
+    if (!user) {
       return res.status(400).json({
         success: false,
         message: "User not found",
       });
     }
 
-    const interviewSession = await InterviewSession.create({
-      userId: userId,
-      resume: req.body.resume_text,
-      username: req.user.name,
-    });
-
-    const response = await generation(
-      interviewSession.resume,
-      interviewSession.history,
-    );
-    console.log("RESPONSE", response.success);
-
-    if (!response.success) {
-      return res.status(500).json({
-        success: false,
-        message: "Error occured while generating questions",
-        error: response.error,
-      });
-    }
-
-    console.log("QUESTIONS", response);
-    console.log("Questions", response.question);
-
-    interviewSession.history.push({
-      question: response.question.question,
-      difficulty: response.question.difficulty,
-      topic: response.question.topic,
-    });
-    interviewSession.totalQuestion = interviewSession.history.length;
-
-    await interviewSession.save();
-    return res.status(201).json({
-      success: true,
-      message: "Questions generated successfully",
-      question: response.question,
-      interviewSession: interviewSession,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: "Server error occured !!",
-      error: error,
-    });
-  }
-};
-
-export const evaluateAnswer = async (req, res) => {
-  try {
-    const userId = req.user.id;
-    if (!userId) {
+    if (user.credits < 50) {
       return res.status(400).json({
         success: false,
-        message: "User not found",
+        message: "Insufficient credits. Buy more credits to continue",
       });
     }
 
-    const sessionId = req.body.interviewSessionId;
+    const { interviewSessionId, answer, resume_text } = req.body;
+
+    // CASE 1: START A NEW INTERVIEW
+
+    if (!interviewSessionId) {
+      if (!resume_text) {
+        return res.status(400).json({
+          success: false,
+          message: "Resume text is required",
+        });
+      }
+
+      const interviewSession = await InterviewSession.create({
+        userId,
+        resume: resume_text,
+        username: req.user.name,
+      });
+
+      user.credits -= 50;
+
+      const response = await generation(
+        interviewSession.resume,
+        interviewSession.history,
+      );
+
+      if (!response.success) {
+        return res.status(500).json({
+          success: false,
+          message: "Error occurred while generating question",
+          error: response.error,
+        });
+      }
+
+      interviewSession.history.push(response.questionResponse);
+      interviewSession.lastQuestion = response.questionResponse;
+      interviewSession.totalQuestion = interviewSession.history.length;
+
+      await interviewSession.save();
+      await user.save();
+
+      return res.status(201).json({
+        success: true,
+        message: "Interview started successfully",
+        question: response.questionResponse,
+        interviewSession: interviewSession,
+      });
+    }
+
+    // CASE 2: CONTINUE EXISTING INTERVIEW
+
     const interviewSession = await InterviewSession.findOne({
-      _id: sessionId,
+      _id: interviewSessionId,
+      userId,
       status: "Incomplete",
     });
 
     if (!interviewSession) {
-      return res.status(400).json({
+      return res.status(404).json({
         success: false,
         message: "Interview session not found",
       });
     }
 
+    if (!answer?.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "Answer not found",
+      });
+    }
+
+    if (interviewSession.history.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No question found to evaluate",
+      });
+    }
+
     const lastIndex = interviewSession.history.length - 1;
-    interviewSession.history[lastIndex].answer = req.body.answer;
-    interviewSession.history[lastIndex].answered = true;
-    await interviewSession.save();
+    const currentQuestion = interviewSession.history[lastIndex];
+
+    if (currentQuestion.answered) {
+      return res.status(400).json({
+        success: false,
+        message: "This question has already been answered",
+      });
+    }
+
+    currentQuestion.answer = answer;
 
     const evaluationData = await evaluation(
       interviewSession.resume,
       interviewSession.history,
     );
 
-    console.log("Eval..", evaluationData);
     if (!evaluationData.success) {
       return res.status(500).json({
         success: false,
@@ -143,33 +167,31 @@ export const evaluateAnswer = async (req, res) => {
       });
     }
 
-    const currentQuestion = interviewSession.history[lastIndex];
-    currentQuestion.strengths = evaluationData.aiEvaluate.strengths;
-    currentQuestion.weaknesses = evaluationData.aiEvaluate.weaknesses;
-    currentQuestion.score = evaluationData.aiEvaluate.score;
-    currentQuestion.feedback = evaluationData.aiEvaluate.feedback;
-    currentQuestion.correctness = evaluationData.aiEvaluate.correctness;
-    currentQuestion.communication = evaluationData.aiEvaluate.communication;
-    currentQuestion.confidence = evaluationData.aiEvaluate.confidence;
+    const evaluationResult = evaluationData.evaluationResponse;
+
+    currentQuestion.strengths = evaluationResult.strengths;
+    currentQuestion.weaknesses = evaluationResult.weaknesses;
+    currentQuestion.score = evaluationResult.score;
+    currentQuestion.feedback = evaluationResult.feedback;
+    currentQuestion.correctness = evaluationResult.correctness;
+    currentQuestion.communication = evaluationResult.communication;
+    currentQuestion.confidence = evaluationResult.confidence;
     currentQuestion.answered = true;
 
-    const finalScore =
-      (evaluationData.aiEvaluate.score +
-        evaluationData.aiEvaluate.correctness +
-        evaluationData.aiEvaluate.confidence +
-        evaluationData.aiEvaluate.communication) /
+    const questionScore =
+      (evaluationResult.score +
+        evaluationResult.correctness +
+        evaluationResult.confidence +
+        evaluationResult.communication) /
       4;
 
-    interviewSession.lastQuestion = currentQuestion;
-    interviewSession.finalScore += finalScore;
-    console.log("current updated question ", currentQuestion);
+    interviewSession.finalScore += questionScore;
 
     const MAX_QUESTIONS = 6;
 
-    if (
-      interviewSession.history.length >= MAX_QUESTIONS &&
-      interviewSession.history[lastIndex].answered
-    ) {
+    // END AFTER 6TH QUESTION IS EVALUATED
+
+    if (interviewSession.history.length >= MAX_QUESTIONS) {
       interviewSession.status = "Completed";
 
       await interviewSession.save();
@@ -177,15 +199,18 @@ export const evaluateAnswer = async (req, res) => {
       return res.status(200).json({
         success: true,
         interviewCompleted: true,
-        message: "Interview completed.",
+        message: "Interview completed",
+        evaluation: evaluationResult,
+        interviewSession: interviewSession,
       });
     }
+
+    // GENERATE NEXT QUESTION
 
     const response = await generation(
       interviewSession.resume,
       interviewSession.history,
     );
-    console.log("Question response", response);
 
     if (!response.success) {
       return res.status(500).json({
@@ -195,22 +220,27 @@ export const evaluateAnswer = async (req, res) => {
       });
     }
 
-    interviewSession.lastQuestion = response.question;
-    interviewSession.history.push(response.question);
+    interviewSession.lastQuestion = response.questionResponse;
+    interviewSession.history.push(response.questionResponse);
     interviewSession.totalQuestion = interviewSession.history.length;
 
     await interviewSession.save();
-    return res.status(201).json({
+
+    return res.status(200).json({
       success: true,
-      message: "Evaluation successful",
-      evaluation: evaluationData.aiEvaluate,
+      interviewCompleted: false,
+      message: "Answer evaluated and next question generated",
+      evaluation: evaluationResult,
+      question: response.questionResponse,
       interviewSession: interviewSession,
     });
   } catch (error) {
+    console.error("Interview controller error:", error);
+
     return res.status(500).json({
       success: false,
-      error: error,
-      message: "Error occured",
+      message: "Error occurred",
+      error: error.message,
     });
   }
 };

@@ -5,8 +5,8 @@ import { useEffect, useState } from "react";
 
 export const GlobalLoader = () => {
   return (
-    <div className="fixed inset-0 bg-mauve/40 backdrop-blur-sm flex justify-center items-center z-999">
-      <BiLoaderAlt className="text-5xl text-white animate-spin" />
+    <div className="fixed inset-0 bg-linen/40 backdrop-blur-sm flex justify-center items-center z-999">
+      <BiLoaderAlt className="text-5xl text-dark-garnet animate-spin" />
     </div>
   );
 };

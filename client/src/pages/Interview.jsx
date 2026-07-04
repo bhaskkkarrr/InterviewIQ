@@ -11,14 +11,11 @@ import Step1 from "../components/Interview/Step1";
 import Step2 from "../components/Interview/Step2";
 
 const Interview = () => {
-  const [step, setStep] = useState(1);
-  const { resumeData, interviewData } = useInterview();
-
+  const { interviewOn } = useInterview();
   return (
-    <div className="w-full min-h-screen bg-linen pb-10">
-      {step == 1 && <Step1 setStep={setStep} />}
-      {/* {step == 2 && resumeData && interviewData && <Step2 setStep={setStep} />} */}
-      {step == 2 && <Step2 setStep={setStep} />}
+    <div className="w-full min-h-screen bg-linen pb-10 md:pb-0">
+      {!interviewOn && <Step1 />}
+      {interviewOn && <Step2 />}
     </div>
   );
 };

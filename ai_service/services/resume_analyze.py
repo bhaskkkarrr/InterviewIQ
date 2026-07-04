@@ -15,12 +15,12 @@ llm_temp = ChatOllama(
 
 model = ChatOpenRouter(
   model='gpt-4o-mini',
-  max_tokens=2000
+  max_tokens=500
 ).with_structured_output(ResumeSummary)
 
 async def resume_info(resume):
   resume_text = await load_document(resume)
-  analysis_result = await model.ainvoke(resume_text)
+  analysis_result = await llm_temp.ainvoke(resume_text)
   return ResumeAnalysisResponse(
     resume_text=resume_text,
     analysis_result=analysis_result

@@ -9,7 +9,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import AuthModal from "../components/AuthModal";
 import ProfileModal from "../components/ProfileModal";
-import LoaderCircle from "../components/LoaderCircle";
 
 const Home = () => {
   const [showModal, setShowModal] = useState(false);
@@ -33,7 +32,7 @@ const Home = () => {
           <motion.button
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
-            className="bg-velvet-orchid text-mauve-50 px-5 py-2 rounded-full md:text-2xl text-lg font-semibold"
+            className="bg-dark-garnet text-linen-50 px-5 py-2 rounded-full md:text-2xl text-lg font-semibold"
             onClick={
               user ? () => navigate("/interview") : () => setShowModal(true)
             }
@@ -43,7 +42,7 @@ const Home = () => {
           <motion.button
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
-            className="bg-mauve text-velvet-orchid px-5 py-2 rounded-full md:text-2xl text-lg font-medium"
+            className="bg-linen-300 text-dark-garnet px-5 py-2 rounded-full md:text-2xl text-lg font-medium"
           >
             View History
           </motion.button>

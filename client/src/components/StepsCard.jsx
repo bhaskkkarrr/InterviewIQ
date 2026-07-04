@@ -33,9 +33,9 @@ const StepsCard = () => {
             <motion.div
               transition={{ delay: 0.3 }}
               whileHover={{ scale: 1.1 }}
-              className={`bg-mauve p-7 flex justify-center flex-col hover:border-2 hover:border-velvet-orchid transition-all duration-400 shadow-md shadow-velvet-orchid-700/50 items-center rounded-3xl relative w-65 ${i % 2 == 0 ? "-rotate-3" : "rotate-3"}`}
+              className={`bg-linen p-7 flex justify-center flex-col hover:border-2 hover:border-dark-garnet transition-all duration-400 shadow-md shadow-dark-garnet/50 items-center rounded-3xl relative w-65 ${i % 2 == 0 ? "-rotate-3" : "rotate-3"}`}
             >
-              <div className="absolute right-1/2.5 shadow-md shadow-olive-900 -top-4 bg-mauve border-2 border-velvet-orchid rounded-xl p-2">
+              <div className="absolute right-1/2.5 shadow-md shadow-olive-900 -top-4 bg-linen border-2 border-dark-garnet rounded-xl p-2">
                 {step.icon}
               </div>
               <span className="mt-7 text-xs font-bold uppercase">

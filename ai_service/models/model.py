@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import Optional
+
 class InterviewQuestion(BaseModel):
     topic: str = Field(description="Give topic of the question that has been asked from the AI to tell the context of the question to the user, it should be precise and accurate, it should not be resume. It should be the topic of the question, 'Resume' should not be the topic")
     difficulty: str = Field(description="It should be easy, medium, and hard only nothing else")
@@ -17,8 +18,6 @@ class AnswerEvaluation(BaseModel):
     confidence: int = Field(description="Score between 1 to 10 based on the response")  
     correctness:int = Field(description="Score between 1 to 10 based on the response")  
     communication: int = Field(description="Score between 1 to 10 based on the response")  
-
-
 
 class ResumeSummary(BaseModel):
     experience: str = Field(
@@ -45,11 +44,9 @@ class ResumeSummary(BaseModel):
     education: list[str]
     other_details: list[str] =Field(description="Some other important and key details about the candidate that can help in interview according to their resume")
 
-
 class ResumeAnalysisResponse(BaseModel):
     resume_text : str
     analysis_result: ResumeSummary
-
 
 class History(BaseModel):
     question: str
@@ -65,7 +62,7 @@ class History(BaseModel):
     strengths: Optional[list[str]]= None
     weaknesses: Optional[list[str]]= None
 
-
 class InterviewStartRequest(BaseModel):
     resume:str
     history: list[History]
+

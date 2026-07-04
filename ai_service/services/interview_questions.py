@@ -255,6 +255,8 @@ The language should only be english
 If the candidate gives a partially correct answer,
 
 reward the correct portions while clearly identifying missing concepts.
+                                                       
+Do not ask follow up question like (you asked what problems you faced and user replied with I have faced many problems) just give scores based on the answwer given by the candidate.
 
 If the answer demonstrates real-world experience beyond theoretical knowledge,
 
@@ -273,6 +275,7 @@ Never hallucinate skills not shown.
 Never praise incorrect answers.
 
 Never be overly harsh.
+                                                       
 
 Judge only this question.
 
@@ -315,27 +318,26 @@ openrouter_llm_evaluate = ChatOpenRouter(
 llm_question = ChatOllama(
   model="qwen2.5:3b",
   temperature=0.5,
-  max_token = 300
+  max_token = 200
 ).with_structured_output(InterviewQuestion)
 
 llm_evaluate = ChatOllama(
   model="qwen2.5:3b",
   temperature=0.1,
-  max_token = 700
+  max_token = 300
 ).with_structured_output(AnswerEvaluation)
 
 
 async def generation(resume, history):
-  questions_chain = question_prompt | openrouter_llm
+  questions_chain = question_prompt | llm_question
   result = await questions_chain.ainvoke({'resume':resume, 'history':history})
   return result
 
 
 async def evaluation(resume, history):
-  evaluation_chain = evaluation_prompt | openrouter_llm_evaluate
+  evaluation_chain = evaluation_prompt | llm_evaluate
   result = await evaluation_chain.ainvoke({'resume':resume, 'history' : history})
   return result
-
 
 
 

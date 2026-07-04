@@ -12,14 +12,14 @@ const HeroText = () => {
         <div className="xl:text-6xl md:text-5xl sm:text-4xl text-2xl">
           Practice Interviews with
         </div>
-        <strong className="xl:text-7xl md:text-6xl sm:text-5xl text-3xl bg-velvet-orchid/30 rounded-3xl px-4 py-2">
+        <strong className="xl:text-7xl md:text-6xl sm:text-5xl text-3xl bg-dark-garnet/30 rounded-3xl px-4 py-2">
           AI Intelligence
         </strong>
       </h1>
       <h3 className="text-sm md:text-lg text-center">
         Smart resume-based mock interviews through
-        <b> live video conferencing </b> with
-        <strong> AI-powered interview evaluation</strong>
+        <b className="text-dark-garnet-900"> live video conferencing </b> with
+        <strong className="text-dark-garnet-900"> AI-powered interview evaluation</strong>
       </h3>
     </div>
   );

@@ -14,14 +14,14 @@ const NavBar = () => {
 
   return (
     <div
-      className="w-full min-w-2xs text-mauve-50 bg-velvet-orchid rounded-2xl px-4 py-3 flex justify-between items-center"
+      className="w-full min-w-2xs text-linen-50 bg-dark-garnet rounded-2xl px-4 py-3 flex justify-between items-center"
       onClick={() => setShowModal(false)}
     >
       <div className="font-bold">Interview IQ</div>
 
       <div className="flex items-center justify-center gap-4">
         {/* Credits */}
-        <div className="flex justify-center gap-1 items-center bg-mauve-50/50 rounded-full px-3 py-1">
+        <div className="flex justify-center gap-1 items-center bg-linen-50/50 rounded-full px-3 py-1">
           <MdGeneratingTokens />
           {user ? user.credit : 0}
         </div>
@@ -29,7 +29,7 @@ const NavBar = () => {
         {/* Profile */}
         <div className="relative">
           <motion.div
-            className="bg-mauve hover:bg-mauve-200 p-2 w-8 h-8 rounded-full text-velvet-orchid-800 flex justify-center items-center font-extrabold cursor-pointer"
+            className="bg-linen hover:bg-linen-200 p-2 w-8 h-8 rounded-full text-dark-garnet flex justify-center items-center font-extrabold cursor-pointer"
             onClick={(e) => {
               e.stopPropagation();
               if (user) {

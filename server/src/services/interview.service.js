@@ -1,6 +1,24 @@
 import axios from "axios";
 import config from "../config/config.js";
 import axiosInstance from "../utils/axiosInstance.js";
+
+export const analyze = async (formData) => {
+  try {
+    const ai_response = await axiosInstance.post("/resume/analyze", formData, {
+      headers: formData.getHeaders(),
+    });
+    return {
+      success: true,
+      data:ai_response.data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error,
+    };
+  }
+};
+
 export const generation = async (resume, history) => {
   try {
     const interview_question = await axiosInstance.post(
@@ -15,7 +33,7 @@ export const generation = async (resume, history) => {
     );
     return {
       success: true,
-      question: interview_question.data,
+      questionResponse: interview_question.data,
     };
   } catch (error) {
     return {
@@ -41,7 +59,7 @@ export const evaluation = async (resume, history) => {
     );
     return {
       success: true,
-      aiEvaluate: aiEvaluate.data,
+      evaluationResponse: aiEvaluate.data,
     };
   } catch (error) {
     return { success: false, error: error };

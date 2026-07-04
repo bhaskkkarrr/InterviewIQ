@@ -47,7 +47,7 @@ const FeaturesCards = () => {
     <div className="flex flex-col items-center justify-center">
       <div className=" flex flex-wrap items-center justify-center gap-3 text-4xl font-semibold my-10 mb-10">
         <div className="">InterviewIQ</div>
-        <h1 className="bg-velvet-orchid/30 font-bold rounded-xl mx-2 px-3 py-1">
+        <h1 className="bg-dark-garnet/30 font-bold rounded-xl mx-2 px-3 py-1">
           AI Capabilities
         </h1>
       </div>
@@ -62,7 +62,7 @@ const FeaturesCards = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: i * 0.1 }}
             whileHover={{ scale: 1.02, transition: { duration: 0.5 } }}
-            className="flex bg-mauve-800/70 p-8 rounded-2xl shadow-lg shadow-velvet-orchid-700 gap-4 max-w-lg items-end"
+            className="flex bg-dark-garnet p-8 rounded-2xl shadow-lg shadow-dark-garnet-800/50 gap-4 max-w-lg items-end"
             key={i}
           >
             <img

@@ -15,20 +15,16 @@ import { BiLoaderAlt } from "react-icons/bi";
 import { useInterview } from "../../context/InterviewContext";
 import { VariableLoader } from "../Loaders";
 
-const Step1 = ({ setStep }) => {
+const Step1 = () => {
   const {
     handleAnalyzeResume,
-    isResumeLoading,
-    setIsResumeLoading,
-    resumeData,
-    interviewData,
-    setResumeData,
-    resumeText,
     handleInterviewSubmit,
+    analysisResult,
+    resumeText,
     resumeAnalysed,
-    setResumeAnalysed,
+    isResumeAnalysing,
+    preparingInterview,
   } = useInterview();
-  console.log("Interview Data", interviewData);
   const [error, setError] = useState({ resumeAnalyzed: null });
   const [preview, setPreview] = useState(null);
   const [resume, setResume] = useState(null);
@@ -56,6 +52,7 @@ const Step1 = ({ setStep }) => {
       }
       const url = URL.createObjectURL(file);
       setCompleted((prev) => [...prev, "analyze"]);
+      setStep(2);
       setPreview(url);
     }
   };
@@ -64,19 +61,22 @@ const Step1 = ({ setStep }) => {
     if (!resume) return;
     let formdata = new FormData();
     formdata.append("resume", resume);
-    await handleAnalyzeResume(formdata);
-    setCompleted((prev) => [...prev, "interview"]);
+    const res = await handleAnalyzeResume(formdata);
+    if (res.success) {
+      setCompleted((prev) => [...prev, "interview"]);
+      setStep(3);
+    }
   };
-
+  const [step, setStep] = useState(1);
   const [completed, setCompleted] = useState(["upload"]);
-  const noOfSkills = resumeData?.user?.analysis_result?.skills?.length;
+  const noOfSkills = analysisResult?.skills?.length;
   const [startInterview, setStartInterview] = useState(false);
   return (
-    <div className="flex flex-col max-w-4xl mx-auto px-4 sm:px-6">
+    <div className="flex flex-col max-w-4xl mx-auto px-4 pb-10 sm:px-6">
       {/* Header */}
       <div className="mx-auto mt-10 mb-6 flex flex-col items-center text-center">
         <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-dark-garnet/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-dark-garnet">
-          Step 1 of 3
+          Step {step} of 3
         </span>
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-dark-garnet leading-tight">
           Start AI Mock Interview
@@ -87,38 +87,33 @@ const Step1 = ({ setStep }) => {
         </p>
       </div>
 
-      <div className=" flex gap-5 w-full h-full">
+      <div className=" flex lg:flex-row flex-col justify-center items-center gap-5 w-full h-full">
         {/* Mini process strip */}
-        <div className="mx-auto w-1/3 mb-8 flex flex-col max-w-md items-center justify-between text-dark-garnet-900">
+        <div
+          className="mx-auto lg:w-1/3 px-5 w-full mb-8 gap-10
+         flex lg:flex-col max-w-md items-center justify-between text-dark-garnet-900"
+        >
           {[
             { icon: MdUploadFile, label: "Upload", id: "upload" },
             { icon: IoAnalyticsSharp, label: "Analyze", id: "analyze" },
             { icon: FaVideo, label: "Interview", id: "interview" },
           ].map((item, i, arr) => (
             <React.Fragment key={item.label}>
-              <div className="flex flex-col items-center gap-1.5">
+              <div className="flex flex-col items-center  gap-1.5">
                 <div
                   className={`flex h-10 w-10 items-center justify-center rounded-full
                     ${completed.includes(item.id) ? "border-dark-garnet bg-dark-garnet text-linen" : "border-linen-400 bg-linen-200 text-dark-garnet/60"} border-2 `}
                 >
-                  {/* ${
-                      i === 0
-                        ? "border-dark-garnet bg-dark-garnet text-linen"
-                        : "border-linen-400 bg-linen-200 text-dark-garnet/60"
-                    } */}
                   <item.icon size={18} />
                 </div>
                 <span className="text-[11px] font-medium">{item.label}</span>
               </div>
-              {i < arr.length - 1 && (
-                <div className="my-2 w-0.5 flex-1 rounded-full bg-dark-garnet-100" />
-              )}
             </React.Fragment>
           ))}
         </div>
 
         {/* Card */}
-        <div className=" w-2/3 rounded-3xl border border-velvet-orchid-800/10 bg-linear-to-br from-dark-garnet-800 to-dark-garnet-900 p-6 sm:p-8 md:p-10 shadow-2xl shadow-velvet-orchid-800/50 text-linen">
+        <div className=" lg:w-2/3 w-full max-w-2xl min-w-2xs rounded-3xl border border-velvet-orchid-800/10 bg-linear-to-br from-dark-garnet-800 to-dark-garnet-900 p-6 sm:p-8 md:p-10 shadow-2xl shadow-velvet-orchid-800/50 text-linen">
           <form
             onSubmit={handleSubmit(handleInterviewStart)}
             className="space-y-6"
@@ -126,7 +121,7 @@ const Step1 = ({ setStep }) => {
             {/* UPLOAD FILE */}
             <div className="w-full">
               <div className="flex flex-col items-center justify-center text-body">
-                {resumeData ? (
+                {resumeAnalysed ? (
                   <motion.div
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -138,7 +133,7 @@ const Step1 = ({ setStep }) => {
                           Role
                         </h3>
                         <span className="text-white text-xl sm:text-2xl capitalize font-semibold">
-                          {resumeData?.user?.analysis_result?.role}
+                          {analysisResult?.role}
                         </span>
                       </div>
                       <div>
@@ -146,27 +141,25 @@ const Step1 = ({ setStep }) => {
                           Experience
                         </h3>
                         <span className="text-white text-xl sm:text-2xl font-semibold">
-                          {resumeData?.user?.analysis_result?.experience}
+                          {analysisResult?.experience}
                         </span>
                       </div>
                     </div>
 
-                    {resumeData?.user?.analysis_result?.projects.length > 0 && (
+                    {analysisResult?.projects.length > 0 && (
                       <div>
                         <h3 className="text-dark-garnet/80 text-sm font-bold uppercase tracking-wide mb-2">
                           Key Projects
                         </h3>
                         <div className="flex flex-wrap gap-2">
-                          {resumeData?.user?.analysis_result?.projects?.map(
-                            (project, i) => (
-                              <span
-                                key={i}
-                                className="inline-flex items-center flex-row gap-x-1.5 py-1.5 px-3 rounded-lg text-xs font-medium bg-linen-50 text-velvet-orchid-800 dark:bg-primary-500/20 dark:text-primary-400"
-                              >
-                                {project}
-                              </span>
-                            ),
-                          )}
+                          {analysisResult?.projects?.map((project, i) => (
+                            <span
+                              key={i}
+                              className="inline-flex items-center flex-row gap-x-1.5 py-1.5 px-3 rounded-lg text-xs font-medium bg-linen-50 text-velvet-orchid-800 dark:bg-primary-500/20 dark:text-primary-400"
+                            >
+                              {project}
+                            </span>
+                          ))}
                         </div>
                       </div>
                     )}
@@ -176,16 +169,14 @@ const Step1 = ({ setStep }) => {
                         Skills
                       </h3>
                       <div className="flex flex-wrap gap-2 items-end">
-                        {resumeData?.user?.analysis_result?.skills
-                          .slice(0, 6)
-                          .map((skill, i) => (
-                            <span
-                              key={i}
-                              className="inline-flex items-center flex-row gap-x-1.5 py-1.5 px-3 rounded-lg text-xs font-medium bg-linen-50 text-velvet-orchid-800"
-                            >
-                              {skill}
-                            </span>
-                          ))}
+                        {analysisResult?.skills.slice(0, 6).map((skill, i) => (
+                          <span
+                            key={i}
+                            className="inline-flex items-center flex-row gap-x-1.5 py-1.5 px-3 rounded-lg text-xs font-medium bg-linen-50 text-velvet-orchid-800"
+                          >
+                            {skill}
+                          </span>
+                        ))}
                         {noOfSkills > 6 && (
                           <div className="text-mauve-50 text-xs font-medium">
                             {noOfSkills > 6 ? "...more" : ""}
@@ -205,16 +196,17 @@ const Step1 = ({ setStep }) => {
                           size={44}
                           className="text-red-500 shrink-0"
                         />
-                        <motion.div
+                        <motion.button
                           whileHover={{ rotate: 90 }}
                           onClick={(e) => {
                             setPreview(null);
                             e.stopPropagation();
                           }}
-                          className="absolute -top-2 -right-3 p-1 rounded-full bg-linen border border-linen-700"
+                          className="absolute -top-2 -right-3 p-1 rounded-full bg-linen border border-linen-700 disabled:cursor-not-allowed"
+                          disabled={isResumeAnalysing}
                         >
                           <RxCross2 />
-                        </motion.div>
+                        </motion.button>
                         <div className="flex-1 min-w-0">
                           <h3 className="font-semibold truncate">
                             {resume.name}
@@ -228,9 +220,9 @@ const Step1 = ({ setStep }) => {
                         whileTap={{ scale: 0.95 }}
                         className="flex items-center justify-center gap-2 px-3 py-2.5 mt-4 rounded-xl bg-dark-garnet shadow-md shadow-linen/30 text-velvet-orchid-50 w-full max-w-sm text-center font-medium transition-colors border-linen-300/30 border hover:bg-dark-garnet cursor-pointer"
                         onClick={handleFileSubmit}
-                        disabled={isResumeLoading}
+                        disabled={isResumeAnalysing}
                       >
-                        {isResumeLoading ? (
+                        {isResumeAnalysing ? (
                           <VariableLoader />
                         ) : (
                           <>
@@ -284,7 +276,7 @@ const Step1 = ({ setStep }) => {
                 whileHover={{ scale: 1.05 }}
                 type="submit"
                 className="py-3 px-4 w-full sm:w-2/3 shadow-lg shadow-mauve-800/50 bg-dark-garnet text-[#f3ebeb] rounded-xl font-bold hover:bg-dark-garnet/80 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-dark-garnet cursor-pointer transition-colors"
-                // disabled={!interviewData || !resumeData}
+                disabled={!resumeAnalysed || startInterview}
                 onClick={() => {
                   setStartInterview(true);
                 }}
@@ -308,10 +300,11 @@ const Step1 = ({ setStep }) => {
             </p>
             <div className="mt-5 flex gap-3">
               <button
-                className="flex-1 rounded-lg bg-dark-garnet px-4 py-2.5 text-sm font-medium text-white hover:text-[#e0d7d7] transition-colors hover:bg-dark-garnet/90"
+                className="flex-1 rounded-lg bg-dark-garnet px-4 py-2.5 text-sm font-medium text-white hover:text-[#e0d7d7] transition-colors hover:bg-dark-garnet/90 cursor-pointer"
+                disabled={preparingInterview}
                 onClick={() => {
+                  console.log("Clicked")
                   handleInterviewStart();
-                  setStep(2);
                 }}
               >
                 Keep Going
