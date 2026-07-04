@@ -1,8 +1,10 @@
 import axios from "axios";
+import config from "../config/config.js";
+import axiosInstance from "../utils/axiosInstance.js";
 export const generation = async (resume, history) => {
   try {
-    const interview_question = await axios.post(
-      "http://localhost:8000/interview/question",
+    const interview_question = await axiosInstance.post(
+      "/interview/question",
       {
         resume,
         history,
@@ -25,8 +27,8 @@ export const generation = async (resume, history) => {
 
 export const evaluation = async (resume, history) => {
   try {
-    const aiEvaluate = await axios.post(
-      "http://localhost:8000/interview/evaluate",
+    const aiEvaluate = await axiosInstance.post(
+      "/interview/evaluate",
       {
         resume,
         history,

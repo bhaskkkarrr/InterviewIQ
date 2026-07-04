@@ -8,10 +8,10 @@ import config from "./config/config.js";
 import interviewRouter from "./routes/interview.routes.js";
 const app = express();
 connectDB();
-const allowedOrigins = [config.CLIENT_URL, config.CLIENT_LIVE_URL];
+// const allowedOrigins = [config.CLIENT_URL, config.CLIENT_LIVE_URL];
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: config.CLIENT_URL,
     credentials: true,
   }),
 );

@@ -13,12 +13,9 @@ if (!process.env.JWT_SECRET) {
 if (!process.env.CLIENT_URL) {
   throw new Error("CLIENT_URL is not available in environment variables");
 }
-if (!process.env.CLIENT_LIVE_URL) {
-  throw new Error("CLIENT_LIVE_URL is not available in environment variables");
-}
-if (!process.env.OPEN_ROUTER_API_KEY) {
+if (!process.env.AI_SERVICE_URL) {
   throw new Error(
-    "OPEN_ROUTER_API_KEY is not available in environment variables",
+    "AI_SERVICE_URL is not available in environment variables",
   );
 }
 const config = {
@@ -26,8 +23,7 @@ const config = {
   MONGO_URI: process.env.MONGO_URI,
   JWT_SECRET: process.env.JWT_SECRET,
   CLIENT_URL: process.env.CLIENT_URL,
-  CLIENT_LIVE_URL: process.env.CLIENT_LIVE_URL,
-  OPEN_ROUTER_API_KEY: process.env.OPEN_ROUTER_API_KEY,
+  AI_SERVICE_URL: process.env.AI_SERVICE_URL,
 };
 
 export default config;
