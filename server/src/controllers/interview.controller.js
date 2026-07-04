@@ -1,4 +1,3 @@
-import { askAi } from "../services/openRouter.service.js";
 import FormData from "form-data";
 import fs from "fs";
 import axios from "axios";
