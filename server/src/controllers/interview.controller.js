@@ -12,19 +12,22 @@ import axiosInstance from "../utils/axiosInstance.js";
 
 export const analyseResume = async (req, res) => {
   if (!req.file) {
-    return res.status(401).json({
+    return res.status(400).json({
       success: false,
       message: "Resume is required",
     });
   }
+
   try {
     const formData = new FormData();
-    formData.append(
-      "resume",
-      fs.createReadStream(req.file.path),
-      req.file.originalname,
-    );
+
+    formData.append("resume", req.file.buffer, {
+      filename: req.file.originalname,
+      contentType: req.file.mimetype,
+    });
+
     const response = await analyze(formData);
+
     if (!response.success) {
       return res.status(500).json({
         success: false,
@@ -32,16 +35,18 @@ export const analyseResume = async (req, res) => {
         message: "Error while analyzing resume",
       });
     }
-    console.log("AI response: ", response);
+
     return res.status(200).json({
+      success: true,
       response,
     });
   } catch (error) {
-    console.log("Error", error);
-    return res.status(501).json({
+    console.error("Resume analysis error:", error);
+
+    return res.status(500).json({
       success: false,
-      message: "Server Error",
-      error: error.name,
+      message: "Server error while analyzing resume",
+      error: error.message,
     });
   }
 };

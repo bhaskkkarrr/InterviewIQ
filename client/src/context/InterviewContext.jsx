@@ -73,14 +73,14 @@ export const InterviewProvider = ({ children }) => {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (!res.data.response.success) {
+      if (!res.data.success) {
         toast.error("Error occured while analysing resume");
       }
       toast.success("Resume Analysed successfully");
       setAnalysisResult(res.data.response.data.analysis_result);
       setResumeText(res.data.response.data.resume_text);
       setResumeAnalysed(true);
-      if (res.data.response.success) {
+      if (res.data.success) {
         return { success: true };
       } else {
         return { success: false };
