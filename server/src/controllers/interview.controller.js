@@ -5,6 +5,7 @@ import userModel from "../models/user.model.js";
 import InterviewSession from "../models/interview.model.js";
 import { evaluation, generation } from "../services/interview.service.js";
 import { error } from "console";
+import axiosInstance from "../utils/axiosInstance.js";
 
 export const analyseResume = async (req, res) => {
   if (!req.file) {
@@ -20,8 +21,8 @@ export const analyseResume = async (req, res) => {
       fs.createReadStream(req.file.path),
       req.file.originalname,
     );
-    const ai_response = await axios.post(
-      "http://localhost:8000/resume/analyze",
+    const ai_response = await axiosInstance.post(
+      "/resume/analyze",
       formData,
       {
         headers: formData.getHeaders(),
