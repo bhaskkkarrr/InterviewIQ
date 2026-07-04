@@ -20,7 +20,7 @@ model = ChatOpenRouter(
 
 async def resume_info(resume):
   resume_text = await load_document(resume)
-  analysis_result = await llm_temp.ainvoke(resume_text)
+  analysis_result = await model.ainvoke(resume_text)
   return ResumeAnalysisResponse(
     resume_text=resume_text,
     analysis_result=analysis_result
