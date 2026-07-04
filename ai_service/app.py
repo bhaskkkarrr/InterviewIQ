@@ -12,3 +12,6 @@ app.include_router(
   interview_router,
   prefix='/interview',
 )
+@app.get("/")
+async def root():
+    return {"status": "AI service running"}

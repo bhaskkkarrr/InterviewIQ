@@ -326,13 +326,13 @@ llm_evaluate = ChatOllama(
 
 
 async def generation(resume, history):
-  questions_chain = question_prompt | llm_question
+  questions_chain = question_prompt | openrouter_llm
   result = await questions_chain.ainvoke({'resume':resume, 'history':history})
   return result
 
 
 async def evaluation(resume, history):
-  evaluation_chain = evaluation_prompt | llm_evaluate
+  evaluation_chain = evaluation_prompt | openrouter_llm_evaluate
   result = await evaluation_chain.ainvoke({'resume':resume, 'history' : history})
   return result
 
