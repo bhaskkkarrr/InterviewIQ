@@ -6,6 +6,7 @@ export const analyze = async (formData) => {
   try {
     const aiResponse = await axiosInstance.post("/resume/analyze", formData, {
       headers: formData.getHeaders(),
+      timeout: 120_000,
     });
 
     return {
