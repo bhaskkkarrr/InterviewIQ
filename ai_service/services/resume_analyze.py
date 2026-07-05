@@ -14,8 +14,8 @@ llm_temp = ChatOllama(
 ).with_structured_output(ResumeSummary)
 
 model = ChatOpenRouter(
-  model='gpt-4o-mini',
-  max_tokens=500
+  model='openai/gpt-4o-mini',
+  max_tokens=300
 ).with_structured_output(ResumeSummary)
 
 async def resume_info(resume):
