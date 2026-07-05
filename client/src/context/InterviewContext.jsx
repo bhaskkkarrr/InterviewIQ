@@ -80,17 +80,12 @@ export const InterviewProvider = ({ children }) => {
       setResumeAnalysed(true);
 
       toast.success("Resume analysed successfully");
+      console.log("RES", res);
 
       return { success: true };
     } catch (error) {
       console.error("Resume analysis failed:", error);
-
-      toast.error(
-        error.response?.data?.message ||
-          error.message ||
-          "Something went wrong",
-      );
-
+      toast.error("Resume analysis failed");
       return { success: false };
     } finally {
       setIsResumeAnalysing(false);
