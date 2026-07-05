@@ -4,21 +4,28 @@ import axiosInstance from "../utils/axiosInstance.js";
 
 export const analyze = async (formData) => {
   try {
-    const ai_response = await axiosInstance.post("/resume/analyze", formData, {
+    const aiResponse = await axiosInstance.post("/resume/analyze", formData, {
       headers: formData.getHeaders(),
     });
+
     return {
       success: true,
-      data:ai_response.data,
+      data: aiResponse.data,
     };
   } catch (error) {
+    console.error("AI service error:", error.response?.data || error.message);
+
     return {
       success: false,
-      error: error,
+      status: error.response?.status || 500,
+      message:
+        error.response?.data?.message ||
+        error.response?.data?.detail ||
+        error.message ||
+        "AI service failed",
     };
   }
 };
-
 export const generation = async (resume, history) => {
   try {
     const interview_question = await axiosInstance.post(
@@ -36,9 +43,16 @@ export const generation = async (resume, history) => {
       questionResponse: interview_question.data,
     };
   } catch (error) {
+    console.error("AI service error:", error.response?.data || error.message);
+
     return {
       success: false,
-      error: error,
+      status: error.response?.status || 500,
+      message:
+        error.response?.data?.message ||
+        error.response?.data?.detail ||
+        error.message ||
+        "AI service failed",
     };
   }
 };
@@ -62,6 +76,16 @@ export const evaluation = async (resume, history) => {
       evaluationResponse: aiEvaluate.data,
     };
   } catch (error) {
-    return { success: false, error: error };
+    console.error("AI service error:", error.response?.data || error.message);
+
+    return {
+      success: false,
+      status: error.response?.status || 500,
+      message:
+        error.response?.data?.message ||
+        error.response?.data?.detail ||
+        error.message ||
+        "AI service failed",
+    };
   }
 };

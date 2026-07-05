@@ -26,31 +26,28 @@ export const analyseResume = async (req, res) => {
       contentType: req.file.mimetype,
     });
 
-    const response = await analyze(formData);
+    const result = await analyze(formData);
 
-    if (!response.success) {
-      return res.status(500).json({
+    if (!result.success) {
+      return res.status(result.status).json({
         success: false,
-        error: response.error,
-        message: "Error while analyzing resume",
+        message: result.message,
       });
     }
 
     return res.status(200).json({
       success: true,
-      response,
+      data: result.data,
     });
   } catch (error) {
-    console.error("Resume analysis error:", error);
+    console.error("Resume controller error:", error);
 
     return res.status(500).json({
       success: false,
-      message: "Server error while analyzing resume",
-      error: error.message,
+      message: "Internal server error",
     });
   }
 };
-
 export const interview = async (req, res) => {
   try {
     const userId = req.user?._id;

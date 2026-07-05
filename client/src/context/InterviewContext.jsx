@@ -68,30 +68,30 @@ export const InterviewProvider = ({ children }) => {
   const handleAnalyzeResume = async (data) => {
     try {
       setIsResumeAnalysing(true);
+
       const res = await axiosInstance.post("/api/interview/analyze", data, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (!res.data.success) {
-        toast.error("Error occured while analysing resume");
-      }
-      toast.success("Resume Analysed successfully");
-      setAnalysisResult(res.data.response.data.analysis_result);
-      setResumeText(res.data.response.data.resume_text);
+
+      setAnalysisResult(res.data.data.analysis_result);
+      setResumeText(res.data.data.resume_text);
       setResumeAnalysed(true);
-      if (res.data?.success) {
-        return { success: true };
-      } else {
-        return { success: false };
-      }
+
+      toast.success("Resume analysed successfully");
+
+      return { success: true };
     } catch (error) {
-      console.log(error);
+      console.error("Resume analysis failed:", error);
+
       toast.error(
-        error.response?.data?.error?.message ||
+        error.response?.data?.message ||
           error.message ||
           "Something went wrong",
       );
+
+      return { success: false };
     } finally {
       setIsResumeAnalysing(false);
     }
