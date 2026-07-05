@@ -80,7 +80,7 @@ export const InterviewProvider = ({ children }) => {
       setAnalysisResult(res.data.response.data.analysis_result);
       setResumeText(res.data.response.data.resume_text);
       setResumeAnalysed(true);
-      if (res.data.success) {
+      if (res.data?.success) {
         return { success: true };
       } else {
         return { success: false };

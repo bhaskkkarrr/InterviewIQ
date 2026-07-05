@@ -62,7 +62,7 @@ const Step1 = () => {
     let formdata = new FormData();
     formdata.append("resume", resume);
     const res = await handleAnalyzeResume(formdata);
-    if (res.success) {
+    if (res?.success) {
       setCompleted((prev) => [...prev, "interview"]);
       setStep(3);
     }
