@@ -64,7 +64,7 @@ export const InterviewProvider = ({ children }) => {
   const [interviewState, setInterviewState] = useState(null);
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [analysisResult, setAnalysisResult] = useState(null);
-
+  const [isAnalysingInterview, setIsAnalysingInterview] = useState(false);
   const handleAnalyzeResume = async (data) => {
     try {
       setIsResumeAnalysing(true);
@@ -98,7 +98,7 @@ export const InterviewProvider = ({ children }) => {
       const res = await axiosInstance.post(
         "/api/interview/",
         {
-          resume_text: demoInterviewData.resume_text,
+          resume_text: resumeText,
         },
         {
           headers: {
@@ -141,6 +141,84 @@ export const InterviewProvider = ({ children }) => {
     }
   }, []);
 
+  const handleInterviewProcess = async (answer) => {
+  if (!answer?.trim()) {
+    return {
+      success: false,
+      message: "Answer is required",
+    };
+  }
+
+  if (!interviewState?._id) {
+    return {
+      success: false,
+      message: "Interview session not found",
+    };
+  }
+
+  try {
+    setIsAnalysingInterview(true);
+
+    const res = await axiosInstance.post(
+      "/api/interview/",
+      {
+        interviewSessionId: interviewState._id,
+        answer: answer.trim(),
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (!res.data.success) {
+      return {
+        success: false,
+        message: res.data.message,
+      };
+    }
+
+    const updatedSession = res.data.interviewSession;
+    const nextQuestion = res.data.question;
+
+    setInterviewState(updatedSession);
+    setCurrentQuestion(nextQuestion);
+
+    localStorage.setItem(
+      "Interview State",
+      JSON.stringify(updatedSession),
+    );
+
+    localStorage.setItem(
+      "Current Question",
+      JSON.stringify(nextQuestion),
+    );
+
+    return {
+      success: true,
+      question: nextQuestion,
+      evaluation: res.data.evaluation,
+    };
+  } catch (error) {
+    console.error(
+      "Continue interview error:",
+      error.response?.data || error,
+    );
+
+    toast.error(
+      error.response?.data?.message ||
+        "Could not continue interview",
+    );
+
+    return {
+      success: false,
+    };
+  } finally {
+    setIsAnalysingInterview(false);
+  }
+};
+
   const handleEndInterview = async () => {
     setInterviewOn(false);
     localStorage.removeItem("Interview State");
@@ -149,6 +227,7 @@ export const InterviewProvider = ({ children }) => {
     setAnalysisResult(null);
     setCurrentQuestion(null);
     setResumeText(null);
+    setResumeAnalysed(false);
     toast.success("Interview Ended");
   };
 
@@ -156,6 +235,9 @@ export const InterviewProvider = ({ children }) => {
     <InterviewContext.Provider
       value={{
         handleAnalyzeResume,
+        isAnalysingInterview,
+        setIsAnalysingInterview,
+        handleInterviewProcess,
         handleEndInterview,
         preparingInterview,
         resumeText,

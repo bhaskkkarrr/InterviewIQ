@@ -13,7 +13,7 @@ import { AiOutlineCloudUpload } from "react-icons/ai";
 import { RxCross2 } from "react-icons/rx";
 import { BiLoaderAlt } from "react-icons/bi";
 import { useInterview } from "../../context/InterviewContext";
-import { VariableLoader } from "../Loaders";
+import { GlobalLoader, VariableLoader } from "../Loaders";
 
 const Step1 = () => {
   const {
@@ -35,6 +35,8 @@ const Step1 = () => {
   } = useForm();
 
   const handleInterviewStart = async () => {
+    const unlockSpeech = new SpeechSynthesisUtterance("");
+    window.speechSynthesis.speak(unlockSpeech);
     // if (resumeAnalysed) {
     //   setError({ resumeAnalyzed: null });
     await handleInterviewSubmit();
@@ -303,7 +305,7 @@ const Step1 = () => {
                 className="flex-1 rounded-lg bg-dark-garnet px-4 py-2.5 text-sm font-medium text-white hover:text-[#e0d7d7] transition-colors hover:bg-dark-garnet/90 cursor-pointer"
                 disabled={preparingInterview}
                 onClick={() => {
-                  console.log("Clicked")
+                  console.log("Clicked");
                   handleInterviewStart();
                 }}
               >
@@ -321,6 +323,8 @@ const Step1 = () => {
           </div>
         </div>
       )}
+
+      {preparingInterview && <GlobalLoader />}
     </div>
   );
 };
