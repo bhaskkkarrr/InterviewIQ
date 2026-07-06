@@ -48,6 +48,7 @@ export const analyseResume = async (req, res) => {
     });
   }
 };
+
 export const interview = async (req, res) => {
   try {
     const userId = req.user?._id;
@@ -189,7 +190,7 @@ export const interview = async (req, res) => {
 
     interviewSession.finalScore += questionScore;
 
-    const MAX_QUESTIONS = 6;
+    const MAX_QUESTIONS = 1;
 
     // END AFTER 6TH QUESTION IS EVALUATED
 
@@ -243,6 +244,38 @@ export const interview = async (req, res) => {
       success: false,
       message: "Error occurred",
       error: error.message,
+    });
+  }
+};
+
+export const report = async (req, res) => {
+  try {
+    const userId = req.user?._id;
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const allInterviews = await InterviewSession.find({ userId });
+    if (allInterviews.length < 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No interview found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      allInterviews,
+    });
+  } catch (error) {
+    return res.status(error.status || 500).json({
+      success: false,
+      message: "Server error",
+      error,
     });
   }
 };

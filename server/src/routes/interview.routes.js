@@ -11,5 +11,5 @@ interviewRouter.post(
   interviewController.analyseResume,
 );
 interviewRouter.post("/", isVerified, interviewController.interview);
-
+interviewRouter.get("/history", isVerified, interviewController.report);
 export default interviewRouter;

@@ -65,6 +65,8 @@ export const InterviewProvider = ({ children }) => {
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [analysisResult, setAnalysisResult] = useState(null);
   const [isAnalysingInterview, setIsAnalysingInterview] = useState(false);
+  const [allInterviews, setAllInterviews] = useState(null);
+  const [isGettingInterviews, setIsGettingInterviews] = useState(false);
   const handleAnalyzeResume = async (data) => {
     try {
       setIsResumeAnalysing(true);
@@ -128,96 +130,95 @@ export const InterviewProvider = ({ children }) => {
     }
   };
 
-  useEffect(() => {
-    if (
-      localStorage.getItem("Interview State") &&
-      localStorage.getItem("Current Question")
-    ) {
-      setInterviewState(JSON.parse(localStorage.getItem("Interview State")));
-      setCurrentQuestion(JSON.parse(localStorage.getItem("Current Question")));
-      setInterviewOn(true);
-    } else {
-      setInterviewOn(false);
-    }
-  }, []);
-
   const handleInterviewProcess = async (answer) => {
-  if (!answer?.trim()) {
-    return {
-      success: false,
-      message: "Answer is required",
-    };
-  }
-
-  if (!interviewState?._id) {
-    return {
-      success: false,
-      message: "Interview session not found",
-    };
-  }
-
-  try {
-    setIsAnalysingInterview(true);
-
-    const res = await axiosInstance.post(
-      "/api/interview/",
-      {
-        interviewSessionId: interviewState._id,
-        answer: answer.trim(),
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
-
-    if (!res.data.success) {
+    if (!answer?.trim()) {
       return {
         success: false,
-        message: res.data.message,
+        message: "Answer is required",
       };
     }
 
-    const updatedSession = res.data.interviewSession;
-    const nextQuestion = res.data.question;
+    if (!interviewState?._id) {
+      return {
+        success: false,
+        message: "Interview session not found",
+      };
+    }
 
-    setInterviewState(updatedSession);
-    setCurrentQuestion(nextQuestion);
+    try {
+      setIsAnalysingInterview(true);
 
-    localStorage.setItem(
-      "Interview State",
-      JSON.stringify(updatedSession),
-    );
+      const res = await axiosInstance.post(
+        "/api/interview/",
+        {
+          interviewSessionId: interviewState._id,
+          answer: answer.trim(),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
 
-    localStorage.setItem(
-      "Current Question",
-      JSON.stringify(nextQuestion),
-    );
+      if (!res.data.success) {
+        return {
+          success: false,
+          message: res.data.message,
+        };
+      }
 
-    return {
-      success: true,
-      question: nextQuestion,
-      evaluation: res.data.evaluation,
-    };
-  } catch (error) {
-    console.error(
-      "Continue interview error:",
-      error.response?.data || error,
-    );
+      if (res.data?.interviewCompleted) {
+        const completedSession = res.data.interviewSession;
 
-    toast.error(
-      error.response?.data?.message ||
-        "Could not continue interview",
-    );
+        setInterviewState(completedSession);
+        setCurrentQuestion(null);
 
-    return {
-      success: false,
-    };
-  } finally {
-    setIsAnalysingInterview(false);
-  }
-};
+        localStorage.setItem(
+          "Interview State",
+          JSON.stringify(completedSession),
+        );
+
+        localStorage.removeItem("Current Question");
+
+        return {
+          success: true,
+          interviewCompleted: true,
+          interviewSession: completedSession,
+          evaluation: res.data.evaluation,
+          message: "Interview completed successfully",
+        };
+      } else {
+        const updatedSession = res.data.interviewSession;
+        const nextQuestion = res.data.question;
+
+        setInterviewState(updatedSession);
+        setCurrentQuestion(nextQuestion);
+
+        localStorage.setItem("Interview State", JSON.stringify(updatedSession));
+
+        localStorage.setItem("Current Question", JSON.stringify(nextQuestion));
+
+        return {
+          success: true,
+          question: nextQuestion,
+          evaluation: res.data.evaluation,
+        };
+      }
+    } catch (error) {
+      console.error("Continue interview error:", error.response?.data || error);
+
+      toast.error(
+        error.response?.data?.message || "Could not continue interview",
+      );
+
+      return {
+        success: false,
+      };
+    } finally {
+      setIsAnalysingInterview(false);
+    }
+  };
 
   const handleEndInterview = async () => {
     setInterviewOn(false);
@@ -230,6 +231,27 @@ export const InterviewProvider = ({ children }) => {
     setResumeAnalysed(false);
     toast.success("Interview Ended");
   };
+
+  const getAllInterviews = async () => {
+    setIsGettingInterviews(true);
+    console.log("Reached");
+    try {
+      const res = await axiosInstance.get("/api/interview/history", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setAllInterviews(res.data.allInterviews);
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setIsGettingInterviews(false);
+    }
+  };
+
+  // useEffect(() => {
+  //   if (token) getAllInterviews();
+  // }, [token]);
 
   return (
     <InterviewContext.Provider
@@ -249,6 +271,9 @@ export const InterviewProvider = ({ children }) => {
         analysisResult,
         interviewOn,
         setInterviewOn,
+        getAllInterviews,
+        allInterviews,
+        isGettingInterviews,
       }}
     >
       {children}

@@ -44,6 +44,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setAuthChecking(true);
       const res = await axiosInstance.get("/api/auth/get-access-token");
+      console.log("res",res);
       if (res.data.success) {
         setToken(res.data.token);
         setUser(res.data.user);

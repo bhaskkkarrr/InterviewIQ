@@ -20,6 +20,7 @@ import { InterviewStartLoader } from "../Loaders";
 import { GiSpeaker, GiSpeakerOff } from "react-icons/gi";
 import ControlButton from "../ControlButton";
 import InterviewerSignal from "../InterviewerSignal";
+import { useNavigate } from "react-router-dom";
 
 const DIFFICULTY_STYLES = {
   Easy: "text-[#093d2f] bg-[#093d2f]/10 ring-1 ring-[#093d2f]/50",
@@ -48,6 +49,7 @@ export default function InterviewSessionPage() {
     setInterviewOn,
     handleEndInterview,
   } = useInterview();
+  const navigate = useNavigate();
   const interviewData = interviewState;
   const [elapsed, setElapsed] = useState(0);
   const [camOn, setCamOn] = useState(true);
@@ -153,7 +155,7 @@ export default function InterviewSessionPage() {
     speakerEnabledRef.current = true;
     setSpeakerEnabled(true);
 
-    await speak(currentQuestion.question);
+    await speak(currentQuestion?.question);
   };
 
   useEffect(() => {
@@ -259,11 +261,30 @@ export default function InterviewSessionPage() {
         const result = await handleInterviewProcessRef.current(finalAnswer);
 
         if (result?.success) {
-          console.log("Answer processed successfully");
-
           setAnswer("");
           answerRef.current = "";
           setInterimAnswer("");
+
+          if (result.interviewCompleted) {
+            console.log("Interview completed");
+
+            shouldSubmitRef.current = false;
+            clearTimeout(silenceTimerRef.current);
+
+            window.speechSynthesis.cancel();
+
+            setIsListening(false);
+            setIsAiSpeaking(false);
+            setAiState("idle");
+
+            setInterviewOn(false);
+
+            navigate(`/${result.interviewSession._id}/report`);
+
+            return;
+          }
+
+          console.log("Answer processed successfully");
         } else {
           console.log("Failed to process answer");
         }
@@ -306,6 +327,7 @@ export default function InterviewSessionPage() {
     introPlayedRef.current = true;
 
     const startConversation = async () => {
+      await wait(300);
       await speak(
         `Hello ${interviewData.username}. Welcome to your Interview IQ mock interview. I will be your A I interviewer today.`,
       );
@@ -314,9 +336,9 @@ export default function InterviewSessionPage() {
 
       if (!speakerEnabledRef.current) return;
 
-      previousQuestionRef.current = currentQuestion.question;
+      previousQuestionRef.current = currentQuestion?.question;
 
-      await speak(currentQuestion.question);
+      await speak(currentQuestion?.question);
     };
 
     startConversation();
@@ -414,15 +436,15 @@ export default function InterviewSessionPage() {
     if (!introPlayedRef.current) return;
     if (!currentQuestion?.question) return;
 
-    if (previousQuestionRef.current === currentQuestion.question) {
+    if (previousQuestionRef.current === currentQuestion?.question) {
       return;
     }
 
-    previousQuestionRef.current = currentQuestion.question;
+    previousQuestionRef.current = currentQuestion?.question;
 
     const speakNextQuestion = async () => {
       await wait(1000);
-      await speak(currentQuestion.question);
+      await speak(currentQuestion?.question);
     };
 
     speakNextQuestion();
@@ -612,15 +634,15 @@ export default function InterviewSessionPage() {
                   <div className="flex justify-between">
                     <div className="mb-3 flex items-center gap-2">
                       <span className="rounded-full bg-dark-garnet/12 px-2.5 py-1 text-[11px] font-medium text-dark-garnet capitalize ring-1 ring-dark-garnet/50">
-                        {currentQuestion.topic}
+                        {currentQuestion?.topic}
                       </span>
                       <span
                         className={`rounded-full px-2.5 py-1 text-[11px] capitalize font-medium ${
-                          DIFFICULTY_STYLES[currentQuestion.difficulty] ||
+                          DIFFICULTY_STYLES[currentQuestion?.difficulty] ||
                           DIFFICULTY_STYLES.Easy
                         }`}
                       >
-                        {currentQuestion.difficulty}
+                        {currentQuestion?.difficulty}
                       </span>
                     </div>
                   </div>
@@ -628,7 +650,7 @@ export default function InterviewSessionPage() {
                     Question {interviewData.history.length}
                   </p>
                   <p className="mt-1.5 font-display text-lg font-medium leading-snug text-black sm:text-xl">
-                    {currentQuestion.question}
+                    {currentQuestion?.question}
                   </p>
                 </div>
 

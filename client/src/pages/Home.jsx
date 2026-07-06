@@ -9,11 +9,13 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import AuthModal from "../components/AuthModal";
 import ProfileModal from "../components/ProfileModal";
+import { useInterview } from "../context/InterviewContext";
 
 const Home = () => {
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { getAllInterviews } = useInterview()
   return (
     <div className="w-full min-h-screen max-w-4xl mx-auto flex flex-col">
       <motion.div
@@ -43,6 +45,9 @@ const Home = () => {
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             className="bg-linen-300 text-dark-garnet px-5 py-2 rounded-full md:text-2xl text-lg font-medium"
+            onClick={() => {
+              navigate("/history");
+            }}
           >
             View History
           </motion.button>
