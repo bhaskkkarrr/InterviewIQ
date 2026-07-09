@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 load_dotenv()
-
+from fastapi import HTTPException
+from openrouter.errors import PaymentRequiredResponseError
 from langchain_mistralai import ChatMistralAI
 from langchain_openrouter import ChatOpenRouter
 from models.model import ResumeSummary, ResumeAnalysisResponse
@@ -18,10 +19,21 @@ model = ChatOpenRouter(
   max_tokens=300
 ).with_structured_output(ResumeSummary)
 
+mistral_llm = ChatMistralAI(
+  model='mistral-small-2506',
+  max_tokens=300
+)
+
 async def resume_info(resume):
   resume_text = await load_document(resume)
-  analysis_result = await model.ainvoke(resume_text)
-  return ResumeAnalysisResponse(
-    resume_text=resume_text,
-    analysis_result=analysis_result
-  )
+  try:
+    analysis_result = await mistral_llm.ainvoke(resume_text)
+    return ResumeAnalysisResponse(
+      resume_text=resume_text,
+      analysis_result=analysis_result
+    )
+  except PaymentRequiredResponseError:
+    raise HTTPException(
+        status_code=503,
+        detail="AI service limit exceeded. Please try again later."
+    )

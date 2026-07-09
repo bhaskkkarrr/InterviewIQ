@@ -299,9 +299,16 @@ History:
 Evaluate the candidate's answer according to the instructions.
 """)])
 
-mistral_llm = ChatMistralAI(
-  model_name='mistral-small-2506'
-)
+mistral_llm_evaluate = ChatMistralAI(
+  model_name='mistral-small-2506',
+  max_tokens=800
+).with_structured_output(AnswerEvaluation)
+
+mistral_llm_question = ChatMistralAI(
+  model='mistral-small-2506',
+  max_token = 200
+).with_structured_output(InterviewQuestion)
+
 
 openrouter_llm = ChatOpenRouter(
   model='gpt-4o-mini',
@@ -328,13 +335,13 @@ llm_evaluate = ChatOllama(
 
 
 async def generation(resume, history):
-  questions_chain = question_prompt | openrouter_llm
+  questions_chain = question_prompt | mistral_llm_question
   result = await questions_chain.ainvoke({'resume':resume, 'history':history})
   return result
 
 
 async def evaluation(resume, history):
-  evaluation_chain = evaluation_prompt | openrouter_llm_evaluate
+  evaluation_chain = evaluation_prompt | mistral_llm_evaluate
   result = await evaluation_chain.ainvoke({'resume':resume, 'history' : history})
   return result
 
