@@ -21,6 +21,7 @@ import { GiSpeaker, GiSpeakerOff } from "react-icons/gi";
 import ControlButton from "../ControlButton";
 import InterviewerSignal from "../InterviewerSignal";
 import { useNavigate } from "react-router-dom";
+import ConfirmationModal from "../ConfirmationModal";
 
 const DIFFICULTY_STYLES = {
   Easy: "text-[#093d2f] bg-[#093d2f]/10 ring-1 ring-[#093d2f]/50",
@@ -466,7 +467,7 @@ export default function InterviewSessionPage() {
   }, []);
 
   return (
-    <div className="min-h-screen w-full bg-linen text-dark-garnet antialiased">
+    <div className="min-h-screen w-full max-w-4xl mx-auto text-dark-garnet antialiased">
       {preparingInterview ? (
         <div className="min-h-screen flex justify-center flex-col items-center">
           <InterviewStartLoader />
@@ -474,48 +475,10 @@ export default function InterviewSessionPage() {
       ) : (
         <div className="">
           <div className="mx-auto flex min-h-screen max-w-350 flex-col">
-            {/* Top bar */}
-            <header className="flex items-center justify-between border-b border-white/8 px-4 py-3 sm:px-6">
-              <div className="flex items-center gap-3">
-                <img
-                  src={logo}
-                  alt="Logo"
-                  className="object-contain shadow-xl shadow-black/20 h-8 w-8 rounded-md"
-                />
-                <div className="hidden sm:block">
-                  <p className="font-display text-sm font-semibold leading-none text-dark-garnet">
-                    InterviewIQ
-                  </p>
-                  <p className="mt-0.5 text-xs text-[#3d4046]">
-                    Mock AI Interview
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 rounded-full bg-dark-garnet px-3 py-1.5 ring-1 ring-white/8">
-                <span className="relative flex h-2 w-2">
-                  <span
-                    className="absolute inline-flex h-full w-full rounded-full bg-[#FF6B57]"
-                    style={{ animation: "rec-pulse 1.6s ease-in-out infinite" }}
-                  />
-                </span>
-                <span className="font-mono-ui text-xs text-[#ced0d6]">REC</span>
-                <span className="font-mono-ui text-xs text-white/90">
-                  {formatTime(elapsed)}
-                </span>
-              </div>
-
-              <button
-                onClick={() => setConfirmEnd(true)}
-                className="flex items-center gap-1.5 rounded-full bg-[#6a0002]/10 px-3 py-1.5 text-xs font-medium text-[#6a0002] ring-1 ring-[#6a0002]/30 transition-colors hover:bg-[#6a0002]/20 sm:px-4 sm:text-sm"
-              >
-                <PhoneOff className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">End interview</span>
-              </button>
-            </header>
+            
 
             {/* Main area */}
-            <main className="grid flex-1 grid-cols-1 gap-px bg-white/8 lg:grid-cols-[1fr_380px]">
+            <main className="grid flex-1 mt-8 grid-cols-1 gap-px  lg:grid-cols-[1fr_380px]">
               {/* Video / AI panel */}
               <section className="flex flex-col">
                 <div className="relative flex flex-1 rounded-2xl shadow-lg shadow-black/40 bg-[#14171F] mx-5  min-w-xs flex-col items-center justify-center gap-5 px-6 py-10">
@@ -534,29 +497,6 @@ export default function InterviewSessionPage() {
                   </div>
 
                   {/* Candidate PiP */}
-                  <div className="absolute bottom-5 left-5 text-white ">
-                    <div className="absolute bottom-5 left-5 text-white">
-                      {speakerEnabled ? (
-                        <button
-                          type="button"
-                          onClick={stopSpeaking}
-                          title="Mute AI interviewer"
-                          className="rounded-2xl bg-linen/50 p-2"
-                        >
-                          <GiSpeaker size={30} />
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={enableSpeaker}
-                          title="Enable AI interviewer"
-                          className="rounded-2xl bg-linen/50 p-2"
-                        >
-                          <GiSpeakerOff size={30} />
-                        </button>
-                      )}
-                    </div>
-                  </div>
 
                   <div className="absolute bottom-5 right-5 flex h-24 w-32 items-center justify-center overflow-hidden rounded-lg bg-[#1C2029] ring-1 ring-white/10 sm:h-28 sm:w-40">
                     {camOn ? (
@@ -601,6 +541,12 @@ export default function InterviewSessionPage() {
                       <VideoOff className="h-4.5 w-4.5" />
                     )}
                   </ControlButton>
+                  <button
+                    onClick={() => setConfirmEnd(true)}
+                    className="flex items-center rounded-full bg-[#6a0002]/10 text-xs font-medium text-[#6a0002] ring-1 h-11 w-11 ring-[#6a0002]/30 transition-colors hover:bg-[#6a0002]/20 sm:px-4 sm:text-sm"
+                  >
+                    <PhoneOff className="h-4.5 w-4.5" />
+                  </button>
                 </div>
                 <div className="mx-5 mb-4 rounded-xl border border-dark-garnet/20 bg-white p-4">
                   <p className="mb-2 text-xs font-medium text-gray-500">
@@ -743,34 +689,18 @@ export default function InterviewSessionPage() {
             </main>
           </div>
 
-          {/* End interview confirmation */}
-          {confirmEnd && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
-              <div className="w-full max-w-sm rounded-xl bg-[#1C2029] p-6 ring-1 ring-white/10">
-                <p className="font-display text-lg font-semibold text-white">
-                  End this interview?
-                </p>
-                <p className="mt-2 text-sm text-[#8B93A7]">
-                  Your report will be generated. You can't resume this session
-                  afterward.
-                </p>
-                <div className="mt-5 flex gap-3">
-                  <button
-                    onClick={() => setConfirmEnd(false)}
-                    className="flex-1 rounded-lg bg-white/5 px-4 py-2.5 text-sm font-medium text-white ring-1 ring-white/10 transition-colors hover:bg-white/10"
-                  >
-                    Keep going
-                  </button>
-                  <button
-                    onClick={handleEnd}
-                    className="flex-1 rounded-lg bg-dark-garnet px-4 py-2.5 text-sm font-medium text-white hover:text-[#e0d7d7] transition-colors hover:bg-dark-garnet/90"
-                  >
-                    End & get report
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+          <ConfirmationModal
+            isOpen={confirmEnd}
+            onClose={() => setConfirmEnd(false)}
+            message="Your report will be generated. You can't resume this session afterward."
+            action={() => {
+              handleEnd();
+              navigate(`/${interviewData?._id}/report`);
+            }}
+            title="End this interview?"
+            confirmText="End & get report"
+            cancelText="Keep going"
+          />
         </div>
       )}
     </div>

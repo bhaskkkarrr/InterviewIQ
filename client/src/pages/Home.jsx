@@ -25,9 +25,6 @@ const Home = () => {
         className="mx-3 my-4 space-y-8"
       >
         <div className="">
-          <NavBar />
-        </div>
-        <div className="">
           <HeroText />
         </div>
         <div className="flex my-12 flex-wrap justify-center gap-3">

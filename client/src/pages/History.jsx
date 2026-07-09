@@ -12,68 +12,8 @@ import {
 import { useInterview } from "../context/InterviewContext";
 import { useAuth } from "../context/AuthContext";
 import { GlobalLoader } from "../components/Loaders";
-
-// ---------------------------------------------------------------------------
-// Mock history — replace with the user's real interview records array.
-// Shape mirrors the report document: status, question counts, scores.
-// ---------------------------------------------------------------------------
-const interviews = [
-  {
-    id: "6a4bb72f474a016f27e94d30",
-    title: "MERN Stack Developer",
-    topic: "Resume",
-    date: "2026-07-06",
-    status: "completed",
-    questionsAnswered: 1,
-    totalQuestions: 1,
-    finalScore: 0,
-    scoreMax: 10,
-  },
-  {
-    id: "5f3aa61e363b005e16d83c21",
-    title: "Frontend Engineering Round",
-    topic: "React & JavaScript",
-    date: "2026-07-01",
-    status: "completed",
-    questionsAnswered: 5,
-    totalQuestions: 5,
-    finalScore: 8,
-    scoreMax: 10,
-  },
-  {
-    id: "4e299f0d252a994d05c72b10",
-    title: "Data Structures & Algorithms",
-    topic: "Problem Solving",
-    date: "2026-06-28",
-    status: "in_progress",
-    questionsAnswered: 3,
-    totalQuestions: 6,
-    finalScore: 5,
-    scoreMax: 10,
-  },
-  {
-    id: "3d188e0c141998c3f461a0ff",
-    title: "System Design Basics",
-    topic: "Architecture",
-    date: "2026-06-20",
-    status: "abandoned",
-    questionsAnswered: 1,
-    totalQuestions: 8,
-    finalScore: 2,
-    scoreMax: 10,
-  },
-  {
-    id: "2c077d0b030887b2e350ffee",
-    title: "Python & Data Science",
-    topic: "Python, Pandas, NumPy",
-    date: "2026-06-15",
-    status: "completed",
-    questionsAnswered: 6,
-    totalQuestions: 6,
-    finalScore: 7,
-    scoreMax: 10,
-  },
-];
+import { useNavigate } from "react-router-dom";
+import { IoMdArrowRoundBack } from "react-icons/io";
 
 const statusConfig = {
   Completed: {
@@ -160,9 +100,12 @@ function StatChip({ icon: Icon, label, value }) {
 }
 
 export default function History() {
-  const { allInterviews, getAllInterviews, isGettingInterviews } =
+  const { allInterviews, getAllInterviews, isGettingInterviews, getInterview } =
     useInterview();
-
+  const navigate = useNavigate();
+  const openReport = (id) => {
+    navigate(`/${id}/report`);
+  };
   const { token } = useAuth();
   useEffect(() => {
     if (token) getAllInterviews();
@@ -202,12 +145,13 @@ export default function History() {
   }
   return (
     <div className="w-full min-h-screen max-w-4xl mx-auto ">
-      <div className="mx-auto max-w-5xl  px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
+      <div className="mx-auto max-w-5xl px-4 py-10  sm:px-6 sm:py-14 sm:pt-7 lg:px-8">
+        
         {/* Page header */}
         <div className="mb-8 sm:mb-10">
-          <p className="text-xs font-semibold uppercase tracking-widest text-dark-garnet mb-2">
+          <div className="text-xs  flex items-center justify-between font-semibold uppercase tracking-widest text-dark-garnet mb-2">
             Interview Records
-          </p>
+          </div>
           <h1 className="text-3xl sm:text-4xl font-semibold text-linen-950">
             Your Interviews History
           </h1>
@@ -312,7 +256,7 @@ export default function History() {
 
                     <button
                       className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-linen-200 bg-linen-50 text-linen-600 transition-colors hover:border-dark-garnet hover:bg-dark-garnet-800/50 hover:text-linen"
-                      aria-label={`View report for ${interview.title}`}
+                      onClick={() => openReport(interview._id)}
                     >
                       <ChevronRight size={16} />
                     </button>

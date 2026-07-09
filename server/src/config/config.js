@@ -14,9 +14,13 @@ if (!process.env.CLIENT_URL) {
   throw new Error("CLIENT_URL is not available in environment variables");
 }
 if (!process.env.AI_SERVICE_URL) {
-  throw new Error(
-    "AI_SERVICE_URL is not available in environment variables",
-  );
+  throw new Error("AI_SERVICE_URL is not available in environment variables");
+}
+if (!process.env.RAZORPAY_API_KEY) {
+  throw new Error("RAZORPAY_API_KEY is not available in environment variables");
+}
+if (!process.env.RAZORPAY_SECRET) {
+  throw new Error("RAZORPAY_SECRET is not available in environment variables");
 }
 const config = {
   PORT: process.env.PORT,
@@ -24,6 +28,8 @@ const config = {
   JWT_SECRET: process.env.JWT_SECRET,
   CLIENT_URL: process.env.CLIENT_URL,
   AI_SERVICE_URL: process.env.AI_SERVICE_URL,
+  RAZORPAY_KEY_ID: process.env.RAZORPAY_API_KEY,
+  RAZORPAY_SECRET: process.env.RAZORPAY_SECRET,
 };
 
 export default config;

@@ -6,17 +6,19 @@ import { signInWithPopup } from "firebase/auth";
 import axiosInstance from "../utils/axiosInstance";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
+import { useInterview } from "./InterviewContext";
+import { useNavigate } from "react-router-dom";
 export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [authChecking, setAuthChecking] = useState(false);
+  const navigate = useNavigate();
   const login = async () => {
     try {
       setIsLoading(true);
       const res = await signInWithPopup(auth, authProvider);
-      console.log("Google Response", res);
       const User = res.user;
       let name = User.displayName;
       let email = User.email;
@@ -24,7 +26,6 @@ export const AuthProvider = ({ children }) => {
         name,
         email,
       });
-      console.log("API Result: ", result);
       setToken(result.data.token);
       setUser(result.data.user);
       toast.success("Logged in successfully");
@@ -44,7 +45,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setAuthChecking(true);
       const res = await axiosInstance.get("/api/auth/get-access-token");
-      console.log("res",res);
+      console.log("res", res);
       if (res.data.success) {
         setToken(res.data.token);
         setUser(res.data.user);
@@ -73,6 +74,7 @@ export const AuthProvider = ({ children }) => {
         setToken(null);
         setUser(null);
         getUser();
+        navigate("/");
         toast.success("Logged out");
       }
     } catch (error) {

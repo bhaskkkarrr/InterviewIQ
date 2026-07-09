@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import axiosInstance from "../utils/axiosInstance";
 import { useAuth } from "./AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const demoInterviewData = {
   resume_text:
@@ -67,6 +68,8 @@ export const InterviewProvider = ({ children }) => {
   const [isAnalysingInterview, setIsAnalysingInterview] = useState(false);
   const [allInterviews, setAllInterviews] = useState(null);
   const [isGettingInterviews, setIsGettingInterviews] = useState(false);
+  const [interviewReport, setInterviewReport] = useState(null);
+  const navigate = useNavigate();
   const handleAnalyzeResume = async (data) => {
     try {
       setIsResumeAnalysing(true);
@@ -113,14 +116,14 @@ export const InterviewProvider = ({ children }) => {
         setInterviewOn(true);
         setInterviewState(res.data.interviewSession);
         setCurrentQuestion(res.data.question);
-        localStorage.setItem(
-          "Interview State",
-          JSON.stringify(res.data.interviewSession),
-        );
-        localStorage.setItem(
-          "Current Question",
-          JSON.stringify(res.data.question),
-        );
+        // localStorage.setItem(
+        //   "Interview State",
+        //   JSON.stringify(res.data.interviewSession),
+        // );
+        // localStorage.setItem(
+        //   "Current Question",
+        //   JSON.stringify(res.data.question),
+        // );
       }
       console.log("Response: \n", res.data);
     } catch (error) {
@@ -174,12 +177,13 @@ export const InterviewProvider = ({ children }) => {
         setInterviewState(completedSession);
         setCurrentQuestion(null);
 
-        localStorage.setItem(
-          "Interview State",
-          JSON.stringify(completedSession),
-        );
+        // localStorage.setItem(
+        //   "Interview State",
+        //   JSON.stringify(completedSession),
+        // );
+        
 
-        localStorage.removeItem("Current Question");
+        // localStorage.removeItem("Current Question");
 
         return {
           success: true,
@@ -195,9 +199,9 @@ export const InterviewProvider = ({ children }) => {
         setInterviewState(updatedSession);
         setCurrentQuestion(nextQuestion);
 
-        localStorage.setItem("Interview State", JSON.stringify(updatedSession));
+        // localStorage.setItem("Interview State", JSON.stringify(updatedSession));
 
-        localStorage.setItem("Current Question", JSON.stringify(nextQuestion));
+        // localStorage.setItem("Current Question", JSON.stringify(nextQuestion));
 
         return {
           success: true,
@@ -222,8 +226,8 @@ export const InterviewProvider = ({ children }) => {
 
   const handleEndInterview = async () => {
     setInterviewOn(false);
-    localStorage.removeItem("Interview State");
-    localStorage.removeItem("Current Question");
+    // localStorage.removeItem("Interview State");
+    // localStorage.removeItem("Current Question");
     setInterviewState(null);
     setAnalysisResult(null);
     setCurrentQuestion(null);
@@ -249,10 +253,6 @@ export const InterviewProvider = ({ children }) => {
     }
   };
 
-  // useEffect(() => {
-  //   if (token) getAllInterviews();
-  // }, [token]);
-
   return (
     <InterviewContext.Provider
       value={{
@@ -273,6 +273,7 @@ export const InterviewProvider = ({ children }) => {
         setInterviewOn,
         getAllInterviews,
         allInterviews,
+        setAllInterviews,
         isGettingInterviews,
       }}
     >

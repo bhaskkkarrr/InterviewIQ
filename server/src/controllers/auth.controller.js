@@ -55,7 +55,7 @@ export async function getUser(req, res) {
       name: user.name,
       email: user.email,
       id: user._id,
-      credit: user.credits,
+      credits: user.credits,
     },
     token: accessToken,
   });
@@ -130,7 +130,7 @@ export async function getAccessToken(req, res) {
       name: user.name,
       email: user.email,
       id: user._id,
-      credit: user.credits,
+      credits: user.credits,
     },
   });
 }

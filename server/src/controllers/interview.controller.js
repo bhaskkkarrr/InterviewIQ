@@ -190,7 +190,7 @@ export const interview = async (req, res) => {
 
     interviewSession.finalScore += questionScore;
 
-    const MAX_QUESTIONS = 1;
+    const MAX_QUESTIONS = 3;
 
     // END AFTER 6TH QUESTION IS EVALUATED
 
@@ -248,7 +248,7 @@ export const interview = async (req, res) => {
   }
 };
 
-export const report = async (req, res) => {
+export const history = async (req, res) => {
   try {
     const userId = req.user?._id;
     const user = await userModel.findById(userId);
@@ -259,7 +259,9 @@ export const report = async (req, res) => {
       });
     }
 
-    const allInterviews = await InterviewSession.find({ userId });
+    const allInterviews = await InterviewSession.find({ userId }).sort({
+      createdAt: -1,
+    });
     if (allInterviews.length < 0) {
       return res.status(400).json({
         success: false,
@@ -278,4 +280,36 @@ export const report = async (req, res) => {
       error,
     });
   }
+};
+
+export const report = async (req, res) => {
+  const userId = req.user?._id;
+  if (!userId) {
+    return res.status(400).json({
+      success: false,
+      message: "User not found",
+    });
+  }
+  console.log(req.params);
+
+  const interviewId = req.params.id;
+  if (!interviewId) {
+    return res.status(400).json({
+      success: false,
+      message: "Interview id not found",
+    });
+  }
+
+  const interview = await InterviewSession.findById(interviewId);
+  if (!interview) {
+    return res.status(400).json({
+      success: false,
+      message: "Interview not found",
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    interview,
+  });
 };

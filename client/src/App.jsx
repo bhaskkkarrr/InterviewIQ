@@ -6,6 +6,8 @@ import { GlobalLoader } from "./components/Loaders";
 import NotFound from "./pages/Page404";
 import Report from "./pages/Report";
 import History from "./pages/History";
+import Pricing from "./pages/Pricing";
+import NavBar from "./components/NavBar";
 
 function App() {
   const { authChecking, token } = useAuth();
@@ -15,7 +17,8 @@ function App() {
   }
 
   return (
-    <div className="min-w-xs bg-linear-60 from-linen-50 to-linen-200 text-dark-garnet">
+    <div className="min-w-xs bg-linear-60 pt-4 px-2 from-linen-50 to-linen-200 text-dark-garnet">
+      <NavBar />
       <Routes>
         <Route path="/" element={<Home />} />
 
@@ -26,7 +29,8 @@ function App() {
 
         {token && <Route path="/interview" element={<Interview />} />}
         <Route path="/:id/report" element={<Report />} />
-        <Route path="/history" element={<History  />} />
+        <Route path="/history" element={<History />} />
+        <Route path="/pricing" element={<Pricing />} />
 
         <Route path="*" element={<NotFound />} />
       </Routes>

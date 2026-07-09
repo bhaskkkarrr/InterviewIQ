@@ -13,7 +13,8 @@ import { AiOutlineCloudUpload } from "react-icons/ai";
 import { RxCross2 } from "react-icons/rx";
 import { BiLoaderAlt } from "react-icons/bi";
 import { useInterview } from "../../context/InterviewContext";
-import { GlobalLoader, VariableLoader } from "../Loaders";
+import { GlobalLoader, InterviewStartLoader, VariableLoader } from "../Loaders";
+import ConfirmationModal from "../ConfirmationModal";
 
 const Step1 = () => {
   const {
@@ -37,12 +38,7 @@ const Step1 = () => {
   const handleInterviewStart = async () => {
     const unlockSpeech = new SpeechSynthesisUtterance("");
     window.speechSynthesis.speak(unlockSpeech);
-    // if (resumeAnalysed) {
-    //   setError({ resumeAnalyzed: null });
     await handleInterviewSubmit();
-    // } else {
-    //   setError({ resumeAnalyzed: "Analyze resume first" });
-    // }
   };
 
   const handleFilePreview = (e) => {
@@ -291,40 +287,17 @@ const Step1 = () => {
       </div>
 
       {startInterview && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
-          <div className="w-full max-w-sm rounded-xl bg-[#1C2029] p-6 ring-1 ring-white/10">
-            <p className="font-display text-lg font-semibold text-white">
-              Start interview?
-            </p>
-            <p className="mt-2 text-sm text-[#8B93A7]">
-              Your credits will be deducted. You can't cancel this session
-              afterward.
-            </p>
-            <div className="mt-5 flex gap-3">
-              <button
-                className="flex-1 rounded-lg bg-dark-garnet px-4 py-2.5 text-sm font-medium text-white hover:text-[#e0d7d7] transition-colors hover:bg-dark-garnet/90 cursor-pointer"
-                disabled={preparingInterview}
-                onClick={() => {
-                  console.log("Clicked");
-                  handleInterviewStart();
-                }}
-              >
-                Keep Going
-              </button>
-              <button
-                onClick={() => {
-                  setStartInterview(false);
-                }}
-                className="flex-1 rounded-lg bg-white/5 px-4 py-2.5 text-sm font-medium text-white ring-1 ring-white/10 transition-colors hover:bg-white/10"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
+        <ConfirmationModal
+          isOpen={startInterview}
+          onClose={() => setStartInterview(false)}
+          message="Your credits will be deducted. You can't cancel this session afterward. Do not reload on the next page. Make sure proper network connection"
+          action={handleInterviewStart}
+          title="Start interview?"
+          confirmText="Keep Going"
+          cancelText="Cancel"
+        />
       )}
-
-      {preparingInterview && <GlobalLoader />}
+      {preparingInterview && <InterviewStartLoader />}
     </div>
   );
 };

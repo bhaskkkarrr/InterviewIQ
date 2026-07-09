@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 export const GlobalLoader = () => {
   return (
-    <div className="fixed inset-0 bg-linen/40 backdrop-blur-sm flex justify-center items-center z-999">
+    <div className="fixed inset-0 bg-linen backdrop-blur-sm flex justify-center items-center z-999">
       <BiLoaderAlt className="text-5xl text-dark-garnet animate-spin" />
     </div>
   );
@@ -18,17 +18,6 @@ export const VariableLoader = () => {
     </div>
   );
 };
-
-// export const InterviewStartLoader = () => {
-//   return (
-//     <div className="w-full h-full flex justify-center  items-center">
-//       <TbLoader2
-//         size={30}
-//         className="text-5xl my-5 text-dark-garnet animate-spin"
-//       />
-//     </div>
-//   );
-// };
 
 const messages = [
   "Setting up your interview session...",
@@ -60,7 +49,7 @@ export const InterviewStartLoader = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="fixed inset-0 bg-linen flex justify-center items-center z-999">
       {/* Your Lottie animation */}
 
       <p className="text-lg font-medium transition-all duration-200">
@@ -69,3 +58,36 @@ export const InterviewStartLoader = () => {
     </div>
   );
 };
+
+const reportMessages = [
+  "Analyzing your interview performance...",
+  "Reviewing your answers and evaluator feedback...",
+  "Measuring your technical correctness...",
+  "Evaluating your communication and clarity...",
+  "Assessing your confidence across the interview...",
+  "Identifying your strongest skills...",
+  "Finding key areas for improvement...",
+];
+
+export const InterviewReportLoader = () => {
+  const [currentMessage, setCurrentMessage] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentMessage((prev) => prev + 1);
+    }, 2000); // Change every 2 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="fixed inset-0 bg-linen flex justify-center items-center z-999">
+      {/* Your Lottie animation */}
+
+      <p className="text-lg font-medium transition-all duration-200">
+        {reportMessages[currentMessage]}
+      </p>
+    </div>
+  );
+};
+

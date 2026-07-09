@@ -6,6 +6,7 @@ import authRouter from "./routes/auth.routes.js";
 import cors from "cors";
 import config from "./config/config.js";
 import interviewRouter from "./routes/interview.routes.js";
+import paymentrouter from "./routes/payment.routes.js";
 const app = express();
 connectDB();
 // const allowedOrigins = [config.CLIENT_URL, config.CLIENT_LIVE_URL];
@@ -21,4 +22,5 @@ app.use(cookieParser());
 
 app.use("/api/auth", authRouter);
 app.use("/api/interview", interviewRouter);
+app.use("/api/payment", paymentrouter);
 export default app;
