@@ -2,7 +2,6 @@ langchain
 langchain-core
 langchain-community
 
-langchain-docling
 langchain-openai
 langchain-ollama
 langchain-mistralai
@@ -12,8 +11,6 @@ pydantic
 
 python-dotenv
 
-pymupdf
-python-docx
 pypdf
 
 tiktoken
