@@ -310,28 +310,28 @@ mistral_llm_question = ChatMistralAI(
 ).with_structured_output(InterviewQuestion)
 
 
-openrouter_llm = ChatOpenRouter(
-  model='gpt-4o-mini',
-  max_tokens=300
-).with_structured_output(InterviewQuestion)
+# openrouter_llm = ChatOpenRouter(
+#   model='gpt-4o-mini',
+#   max_tokens=300
+# ).with_structured_output(InterviewQuestion)
 
-openrouter_llm_evaluate = ChatOpenRouter(
-  model='gpt-4o-mini',
-  max_tokens=800
-).with_structured_output(AnswerEvaluation)
+# openrouter_llm_evaluate = ChatOpenRouter(
+#   model='gpt-4o-mini',
+#   max_tokens=800
+# ).with_structured_output(AnswerEvaluation)
 
 
-llm_question = ChatOllama(
-  model="qwen2.5:3b",
-  temperature=0.5,
-  max_token = 200
-).with_structured_output(InterviewQuestion)
+# llm_question = ChatOllama(
+#   model="qwen2.5:3b",
+#   temperature=0.5,
+#   max_token = 200
+# ).with_structured_output(InterviewQuestion)
 
-llm_evaluate = ChatOllama(
-  model="qwen2.5:3b",
-  temperature=0.1,
-  max_token = 300
-).with_structured_output(AnswerEvaluation)
+# llm_evaluate = ChatOllama(
+#   model="qwen2.5:3b",
+#   temperature=0.1,
+#   max_token = 300
+# ).with_structured_output(AnswerEvaluation)
 
 
 async def generation(resume, history):

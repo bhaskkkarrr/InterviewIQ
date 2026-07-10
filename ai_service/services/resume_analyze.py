@@ -8,21 +8,21 @@ from models.model import ResumeSummary, ResumeAnalysisResponse
 from services.resume import load_document
 from langchain_ollama import ChatOllama
 
-llm_temp = ChatOllama(
-  model="qwen2.5:3b",
-  temperature=0.5,
-  max_token = 300
-).with_structured_output(ResumeSummary)
+# llm_temp = ChatOllama(
+#   model="qwen2.5:3b",
+#   temperature=0.5,
+#   max_token = 300
+# ).with_structured_output(ResumeSummary)
 
-model = ChatOpenRouter(
-  model='openai/gpt-4o-mini',
-  max_tokens=300
-).with_structured_output(ResumeSummary)
+# model = ChatOpenRouter(
+#   model='openai/gpt-4o-mini',
+#   max_tokens=300
+# ).with_structured_output(ResumeSummary)
 
 mistral_llm = ChatMistralAI(
   model='mistral-small-2506',
   max_tokens=300
-)
+).with_structured_output(ResumeSummary)
 
 async def resume_info(resume):
   resume_text = await load_document(resume)
