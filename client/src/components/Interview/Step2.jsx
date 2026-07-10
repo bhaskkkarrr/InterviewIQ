@@ -452,7 +452,7 @@ export default function InterviewSessionPage() {
   }, [currentQuestion?.question, speak]);
 
   const answeredCount = interviewData?.history?.filter(
-    (h) => h.answered,
+    (h) => h?.answered,
   ).length;
 
   // Timer
@@ -616,11 +616,11 @@ export default function InterviewSessionPage() {
                         idx === interviewData.history.length - 1;
                       return (
                         <li
-                          key={h._id}
+                          key={h?._id}
                           className="flex items-start gap-3 max-h-48 "
                         >
                           <div className="mt-0.5 shrink-0">
-                            {h.answered ? (
+                            {h?.answered ? (
                               <CheckCircle2 className="h-4 w-4 text-[#6FE3C4]" />
                             ) : isCurrent ? (
                               <CircleDot className={`h-4 w-4 text-[#706c6c]`} />
@@ -633,14 +633,14 @@ export default function InterviewSessionPage() {
                               className={`truncate text-sm ${
                                 isCurrent
                                   ? "text-black"
-                                  : h.answered
+                                  : h?.answered
                                     ? "text-black/80"
                                     : "text-dark-garnet"
                               }`}
                             >
-                              {h.question}
+                              {h?.question}
                             </p>
-                            {h.answered && h.score != null && (
+                            {h?.answered && h.score != null && (
                               <p className="mt-0.5 font-mono-ui text-[11px] text-[#8B93A7]">
                                 Score {h.score}/10
                               </p>
@@ -674,11 +674,11 @@ export default function InterviewSessionPage() {
                       {interviewData.history.map((h, idx) => (
                         <div className="text-black text-[11px]" key={idx}>
                           <div className="me-3 justify-start">
-                            <b>Interviewer:</b> {h.question}
+                            <b>Interviewer:</b> {h?.question}
                           </div>
                           <div className="ms-3 justify-end">
                             {" "}
-                            <b>Candidate:</b> {h.answer}
+                            <b>Candidate:</b> {h?.answer}
                           </div>
                         </div>
                       ))}

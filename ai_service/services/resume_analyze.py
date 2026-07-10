@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 load_dotenv()
 from fastapi import HTTPException
-from openrouter.errors import PaymentRequiredResponseError
+from langchain_core.exceptions import OutputParserException
 from langchain_mistralai import ChatMistralAI
 from langchain_openrouter import ChatOpenRouter
 from models.model import ResumeSummary, ResumeAnalysisResponse
@@ -20,8 +20,9 @@ from langchain_ollama import ChatOllama
 # ).with_structured_output(ResumeSummary)
 
 mistral_llm = ChatMistralAI(
-  model='mistral-small-2506',
-  max_tokens=300
+    model="mistral-small-2506",
+    max_tokens=1000,
+    temperature=0
 ).with_structured_output(ResumeSummary)
 
 async def resume_info(resume):
@@ -32,8 +33,18 @@ async def resume_info(resume):
       resume_text=resume_text,
       analysis_result=analysis_result
     )
-  except PaymentRequiredResponseError:
-    raise HTTPException(
-        status_code=503,
-        detail="AI service limit exceeded. Please try again later."
-    )
+  except OutputParserException as error:
+        print(f"Structured output parsing failed: {error}")
+
+        raise HTTPException(
+            status_code=502,
+            detail="AI generated an incomplete resume analysis. Please try again."
+        )
+
+  except Exception as error:
+        print(f"Resume analysis failed: {type(error).__name__}: {error}")
+
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to analyze the resume."
+        )

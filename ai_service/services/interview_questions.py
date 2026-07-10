@@ -302,12 +302,12 @@ Evaluate the candidate's answer according to the instructions.
 mistral_llm_evaluate = ChatMistralAI(
   model_name='mistral-small-2506',
   max_tokens=800
-).with_structured_output(AnswerEvaluation)
+).with_structured_output(AnswerEvaluation, method="json_schema")
 
 mistral_llm_question = ChatMistralAI(
-  model='mistral-small-2506',
-  max_token = 200
-).with_structured_output(InterviewQuestion)
+  model_name='mistral-small-2506',
+  max_tokens=200
+).with_structured_output(InterviewQuestion, method="json_schema")
 
 
 # openrouter_llm = ChatOpenRouter(
@@ -337,12 +337,14 @@ mistral_llm_question = ChatMistralAI(
 async def generation(resume, history):
   questions_chain = question_prompt | mistral_llm_question
   result = await questions_chain.ainvoke({'resume':resume, 'history':history})
+  print("result",result)
   return result
 
 
 async def evaluation(resume, history):
   evaluation_chain = evaluation_prompt | mistral_llm_evaluate
   result = await evaluation_chain.ainvoke({'resume':resume, 'history' : history})
+  print("result",result)
   return result
 
 
