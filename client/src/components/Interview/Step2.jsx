@@ -171,8 +171,8 @@ export default function InterviewSessionPage() {
 
     const recognition = new SpeechRecognition();
 
-    recognition.lang = "en-IN";
-    recognition.continuous = true;
+    recognition.lang = "en-US";
+    recognition.continuous = false;
     recognition.interimResults = true;
 
     recognition.onstart = () => {
@@ -224,12 +224,21 @@ export default function InterviewSessionPage() {
     };
 
     recognition.onend = async () => {
-      console.log("Microphone stopped");
-
+      console.log("Recognition ended");
       clearTimeout(silenceTimerRef.current);
 
       setIsListening(false);
       setInterimAnswer("");
+      // stopped by browser
+      if (!shouldSubmitRef.current) {
+        if (!isAiSpeaking && !isProcessingAnswerRef.current) {
+          try {
+            recognition.start();
+          } catch {}
+        }
+
+        return;
+      }
 
       // Only submit when stopped by 6-second silence timer
       if (!shouldSubmitRef.current) {
@@ -475,8 +484,6 @@ export default function InterviewSessionPage() {
       ) : (
         <div className="">
           <div className="mx-auto flex min-h-screen max-w-350 flex-col">
-            
-
             {/* Main area */}
             <main className="grid flex-1 mt-8 grid-cols-1 gap-px  lg:grid-cols-[1fr_380px]">
               {/* Video / AI panel */}
