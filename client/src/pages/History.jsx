@@ -231,7 +231,7 @@ export default function History() {
                       </span>
                       <span>
                         {interview.history.reduce(
-                          (sum, q) => sum + q.answered,
+                          (sum, q) => sum + q?.answered,
                           0,
                         )}
                         /{interview.totalQuestion} questions answered
