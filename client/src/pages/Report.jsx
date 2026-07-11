@@ -444,7 +444,6 @@ export default function InterviewReport() {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("res", res.data);
       if (res.data.success) {
         setInterviewReport(res.data.interview);
       }

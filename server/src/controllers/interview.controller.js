@@ -290,7 +290,6 @@ export const report = async (req, res) => {
       message: "User not found",
     });
   }
-  console.log(req.params);
 
   const interviewId = req.params.id;
   if (!interviewId) {

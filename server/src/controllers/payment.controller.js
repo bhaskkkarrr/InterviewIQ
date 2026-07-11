@@ -14,7 +14,6 @@ export const createOrder = async (req, res) => {
         message: "User not found",
       });
     }
-    console.log("BODY", req.body);
 
     const { packId } = req.body;
 
@@ -122,8 +121,7 @@ export const verifyPayment = async (req, res) => {
         message: "User not found",
       });
     }
-    console.log("USer", user);
-    console.log("paymentRecord", paymentRecord);
+    
     user.credits += paymentRecord.credits;
     await user.save();
 

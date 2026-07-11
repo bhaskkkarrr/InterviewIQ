@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form";
 // Components Import
 import { useInterview } from "../context/InterviewContext";
 import { VariableLoader } from "../components/Loaders";
-import InterviewSelector from "../components/InterviewSelector";
 import { IoMdArrowRoundBack } from "react-icons/io";
 
 import Step1 from "../components/Interview/Step1";

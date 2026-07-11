@@ -176,7 +176,6 @@ export default function InterviewSessionPage() {
     recognition.interimResults = true;
 
     recognition.onstart = () => {
-      console.log("Microphone started");
 
       setIsListening(true);
       setAiState("idle");
@@ -224,7 +223,6 @@ export default function InterviewSessionPage() {
     };
 
     recognition.onend = async () => {
-      console.log("Microphone stopped");
 
       clearTimeout(silenceTimerRef.current);
 
@@ -241,21 +239,18 @@ export default function InterviewSessionPage() {
 
       // Prevent duplicate backend requests
       if (isProcessingAnswerRef.current) {
-        console.log("Answer is already being processed");
         return;
       }
 
       const finalAnswer = answerRef.current.trim();
 
       if (!finalAnswer) {
-        console.log("No answer to submit");
         return;
       }
 
       isProcessingAnswerRef.current = true;
 
       try {
-        console.log("Sending candidate answer:", finalAnswer);
 
         setAiState("thinking");
 
@@ -267,7 +262,6 @@ export default function InterviewSessionPage() {
           setInterimAnswer("");
 
           if (result.interviewCompleted) {
-            console.log("Interview completed");
 
             shouldSubmitRef.current = false;
             clearTimeout(silenceTimerRef.current);
@@ -285,9 +279,8 @@ export default function InterviewSessionPage() {
             return;
           }
 
-          console.log("Answer processed successfully");
+          ("Answer processed successfully");
         } else {
-          console.log("Failed to process answer");
         }
       } catch (error) {
         console.error("Error processing answer:", error);
@@ -356,17 +349,14 @@ export default function InterviewSessionPage() {
 
   const startListening = () => {
     if (!speechSupported) {
-      console.log("Speech recognition is not supported");
       return;
     }
 
     if (isAiSpeaking) {
-      console.log("Wait until AI finishes speaking");
       return;
     }
 
     if (isProcessingAnswerRef.current) {
-      console.log("Previous answer is still being processed");
       return;
     }
 
@@ -386,7 +376,6 @@ export default function InterviewSessionPage() {
     try {
       recognitionRef.current.start();
     } catch (error) {
-      console.log("Recognition already running:", error);
     }
   };
 
@@ -401,7 +390,6 @@ export default function InterviewSessionPage() {
     try {
       recognitionRef.current.stop();
     } catch (error) {
-      console.log("Recognition already stopped:", error);
     }
   };
 
@@ -416,7 +404,6 @@ export default function InterviewSessionPage() {
       const finalAnswer = answerRef.current.trim();
 
       if (!finalAnswer) {
-        console.log("Silence detected, but candidate has not answered");
         return;
       }
 
