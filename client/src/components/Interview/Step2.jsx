@@ -171,8 +171,8 @@ export default function InterviewSessionPage() {
 
     const recognition = new SpeechRecognition();
 
-    recognition.lang = "en-US";
-    recognition.continuous = false;
+    recognition.lang = "en-IN";
+    recognition.continuous = true;
     recognition.interimResults = true;
 
     recognition.onstart = () => {
@@ -224,21 +224,12 @@ export default function InterviewSessionPage() {
     };
 
     recognition.onend = async () => {
-      console.log("Recognition ended");
+      console.log("Microphone stopped");
+
       clearTimeout(silenceTimerRef.current);
 
       setIsListening(false);
       setInterimAnswer("");
-      // stopped by browser
-      if (!shouldSubmitRef.current) {
-        if (!isAiSpeaking && !isProcessingAnswerRef.current) {
-          try {
-            recognition.start();
-          } catch {}
-        }
-
-        return;
-      }
 
       // Only submit when stopped by 6-second silence timer
       if (!shouldSubmitRef.current) {
