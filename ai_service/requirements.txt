@@ -1,31 +1,36 @@
 langchain
 langchain-core
-langchain-community
 
-langchain-openai
-langchain-ollama
 langchain-mistralai
-langchain-openrouter
-
-pydantic
-
-python-dotenv
-
-pypdf
-
-tiktoken
+# langchain-openrouter
 
 fastapi
 uvicorn
 
+python-dotenv
 python-multipart
 
-jinja2
+pydantic
 
-pillow
+pypdf
 
-chromadb
-langchain-chroma
 
-sentence-transformers
-langchain-huggingface
+# langchain
+# langchain-core
+# langchain-community
+
+# langchain-openai
+# langchain-ollama
+# langchain-mistralai
+# langchain-openrouter
+
+# pydantic
+
+# python-dotenv
+
+# pypdf
+
+# fastapi
+# uvicorn
+
+# python-multipart
