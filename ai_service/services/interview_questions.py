@@ -1,8 +1,8 @@
 from dotenv import load_dotenv
 load_dotenv()
-from langchain_openrouter import ChatOpenRouter
+# from langchain_openrouter import ChatOpenRouter
 from langchain_mistralai import ChatMistralAI
-from langchain_ollama import ChatOllama
+# from langchain_ollama import ChatOllama
 from langchain_core.prompts import ChatPromptTemplate
 from models.model import InterviewQuestion, AnswerEvaluation
 

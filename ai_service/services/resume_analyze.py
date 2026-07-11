@@ -3,10 +3,10 @@ load_dotenv()
 from fastapi import HTTPException
 from langchain_core.exceptions import OutputParserException
 from langchain_mistralai import ChatMistralAI
-from langchain_openrouter import ChatOpenRouter
+# from langchain_openrouter import ChatOpenRouter
 from models.model import ResumeSummary, ResumeAnalysisResponse
 from services.resume import load_document
-from langchain_ollama import ChatOllama
+# from langchain_ollama import ChatOllama
 
 # llm_temp = ChatOllama(
 #   model="qwen2.5:3b",
