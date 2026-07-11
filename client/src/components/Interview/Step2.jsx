@@ -541,7 +541,7 @@ export default function InterviewSessionPage() {
                   </ControlButton>
                   <button
                     onClick={() => setConfirmEnd(true)}
-                    className="flex items-center rounded-full bg-[#6a0002]/10 text-xs font-medium text-[#6a0002] ring-1 h-11 w-11 ring-[#6a0002]/30 transition-colors hover:bg-[#6a0002]/20 sm:px-4 sm:text-sm"
+                    className="flex items-center justify-center rounded-full bg-[#6a0002]/10 text-xs font-medium text-[#6a0002] ring-1 h-11 w-11 ring-[#6a0002]/30 transition-colors hover:bg-[#6a0002]/20 sm:px-4 sm:text-sm"
                   >
                     <PhoneOff className="h-4.5 w-4.5" />
                   </button>
