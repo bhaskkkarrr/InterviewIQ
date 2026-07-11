@@ -1,14 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import axiosInstance from "../utils/axiosInstance";
 import { useAuth } from "../context/AuthContext";
 // import { useForm } from "react-router-dom";
 import toast from "react-hot-toast";
 import { Check, Coins, Sparkles, Zap, ShieldCheck } from "lucide-react";
 import { CreditPlans } from "../utils/CreditPlans";
+import { GlobalLoader } from "../components/Loaders";
 const Pricing = () => {
+  const [isVerifyingPayment, setIsVerifyingPayment] = useState(false);
   const { token, user, setUser } = useAuth();
 
   const handlePayment = async (packId) => {
+    setIsVerifyingPayment(true);
     console.log("ID", packId);
     try {
       const res = await axiosInstance.post(
@@ -72,6 +75,8 @@ const Pricing = () => {
     } catch (error) {
       console.error(error);
       toast.error(error.response?.data?.message || "Could not start payment");
+    } finally {
+      setIsVerifyingPayment(false);
     }
   };
 
@@ -258,6 +263,7 @@ const Pricing = () => {
           </div>
         </div>
       </div>
+      {isVerifyingPayment && <GlobalLoader />}
     </div>
   );
 };
