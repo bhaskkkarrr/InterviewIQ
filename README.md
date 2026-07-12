@@ -342,10 +342,6 @@ POST /api/auth/login
 
 POST /api/auth/logout
 
-POST /api/auth/verify-email
-
-POST /api/auth/send-otp
-
 ```
 
 ---
@@ -460,7 +456,7 @@ Through this project I gained hands-on experience with:
 Clone Repository
 
 ```bash
-git clone https://github.com/yourusername/interviewiq.git
+git clone https://github.com/bhaskkkarrr/interviewiq.git
 ```
 
 Frontend
@@ -482,9 +478,9 @@ npm run dev
 AI Service
 
 ```bash
-cd python-ai
+cd ai_service
 pip install -r requirements.txt
-uvicorn main:app --reload
+uvicorn app:app --reload
 ```
 
 ---
